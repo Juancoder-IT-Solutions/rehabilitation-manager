@@ -1,4 +1,14 @@
+'use client'
+
+import sampleController from "../controllers/sample_controller"
+
 const About = () => {
+
+    const test = async () => {
+       const data = await sampleController.sample_api()
+       console.log(data)
+    }
+
     return (
         <div className="page-wrapper">
             <div className="page-header d-print-none">
@@ -17,6 +27,8 @@ const About = () => {
                     <div className="card">
                         <div className="card-body">
                             This is about
+
+                            <button onClick={test}>Click</button>
                         </div>
                     </div>
                 </div>
