@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { FaPencilAlt, FaPlus, FaTrashAlt } from 'react-icons/fa';
 import Footer from '../components/Footer';
-import servicesController from '../controllers/Services';
+import galleryController from '../controllers/RehabGallery';
 import DataTable from 'react-data-table-component';
-import { Spinner, FormControl, InputGroup, Button } from 'react-bootstrap';
-import ModalServices from './modalServices';
+import { Spinner, Button } from 'react-bootstrap';
 import globals from '../controllers/Globals';
+import ModalGallery from './modalGallery';
 
 const ServicesPage = () => {
   const [listServices, setListServices] = useState([]);
@@ -18,35 +18,51 @@ const ServicesPage = () => {
   const [submit_type, setSubmitType] = useState('add');
 
   const [showModal, setShowModal] = useState(false);
+  const no_image = `data:image/svg+xml;charset=UTF-8, 
+  <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-photo-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8h.01" /><path d="M13 21h-7a3 3 0 0 1 -3 -3v-12a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v7" /><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l3 3" /><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0" /><path d="M22 22l-5 -5" /><path d="M17 22l5 -5" /></svg>`;
 
 
-  const fetchServices = async () => {
+  const fetchEntry = async () => {
     try {
-      const response = await servicesController.fetch();
+      const response = await galleryController.fetch();
       setListServices(response.data);
     } catch (error) {
-      console.error('Failed to fetch services:', error);
+      console.error('Failed to fetch entry:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { name: '#', selector: (row: any) => row.count, sortable: true },
-    { name: 'Service', selector: (row: any) => row.service_name, sortable: true },
-    { name: 'Fee', selector: (row: any) => globals.formatNumber(row.service_fee), sortable: true },
-    { name: 'Description', selector: (row: any) => row.service_desc, sortable: true },
-    { name: 'Date Last Modified', selector: (row: any) => row.date_updated, sortable: true }, {
+    { name: '#', selector: (row:any) => row.count, sortable: true },
+    {
+      name: 'Image',
+      cell: (row:any) => (
+        <img
+          src={row.file_b64 ? `data:image/jpeg;base64,${row.file_b64}` : no_image}
+          alt="Image"
+          style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '5px', padding: '5px' }}
+          onError={(e) => { e.currentTarget.src = no_image; }}
+        />
+      ),
+    },
+    {
+      name: 'Date Last Modified',
+      selector: (row:any) => row.date_added, // Fix to show the correct date
+      sortable: true
+    },
+    {
       name: 'Actions',
-      cell: (row: any) => (
+      cell: (row:any) => (
         <div className="btn-list flex-nowrap">
           <a href="#" onClick={() => handleUpdate(row)} className="btn btn-primary">
             <FaPencilAlt />
           </a>
         </div>
-      )
+      ),
     }
   ];
+  
 
   const handleUpdate = (row: any) => {
     setFormData(row);
@@ -62,7 +78,7 @@ const ServicesPage = () => {
   );
 
   useEffect(() => {
-    fetchServices();
+    fetchEntry();
   }, []);
 
   const handleDelete = () => {
@@ -72,9 +88,9 @@ const ServicesPage = () => {
     }
 
     if (window.confirm(`Are you sure you want to delete ${selectedRows.length} selected entries?`)) {
-      console.log('Delete these rows: ', selectedRows.map((row: any) => row.service_id));
+      console.log('Delete these rows: ', selectedRows.map((row: any) => row.id));
       // Add delete logic here
-      deleteEntry(selectedRows.map((row: any) => row.service_id));
+      deleteEntry(selectedRows.map((row: any) => row.id));
     }
   };
 
@@ -82,12 +98,12 @@ const ServicesPage = () => {
     console.log("select ", selectedRows);
     // setLoading(true);
     try {
-      const response = await servicesController.delete_all(selectedRows);
+      const response = await galleryController.delete_all(selectedRows);
       if (response <= 0) {
         alert('Failed to delete selected entries.');
       } else {
         alert('Successfully deleted selected entries.');
-        fetchServices();
+        fetchEntry();
       }
     } catch (error) {
       console.error('Failed to fetch services:', error);
@@ -108,8 +124,8 @@ const ServicesPage = () => {
         <div className='container-xl'>
           <div className='row g-2 align-items-center'>
             <div className='col'>
-              <div className='page-pretitle'>Manage Services</div>
-              <h2 className='page-title'>Services</h2>
+              <div className='page-pretitle'>Manage Rehab Gallery</div>
+              <h2 className='page-title'>Gallery</h2>
             </div>
             <div className='col-auto ms-auto d-print-none'>
               <div className='btn-list'>
@@ -161,10 +177,9 @@ const ServicesPage = () => {
           </div>
         </div>
       </div>
-
-      <ModalServices showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchServices={fetchServices} submit_type={submit_type} />
-
       <Footer />
+
+      <ModalGallery showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchEntry={fetchEntry} submit_type={submit_type} />
     </div>
   );
 };
