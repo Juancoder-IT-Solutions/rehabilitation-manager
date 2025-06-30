@@ -31,11 +31,11 @@ class ServicesController {
 
         return data.data
     }
-
-    async add(formData: FormData) {
-        const data = await query.post("add_services", formData, {
-            headers: { "Content-Type": "multipart/form-data" }
-        });
+    
+    async add(form_data: any) {
+        const data = await query.post("add_services", {
+            input: form_data
+        })
     
         return data.data;
     }

@@ -1,3 +1,4 @@
+import alerts from "../components/Alerts";
 import servicesController from "../controllers/Services";
 
 interface ComponentProps {
@@ -21,7 +22,6 @@ const ModalServices: React.FC<ComponentProps> = ({ showModal, setShowModal, form
     const handleSubmit = async (e: any) => {
         e.preventDefault();
 
-        
         let response;
         if (submit_type === "add") {
             response = await servicesController.add(form_data);
@@ -30,13 +30,13 @@ const ModalServices: React.FC<ComponentProps> = ({ showModal, setShowModal, form
         }
 
         if (response === 1) {
-            alert(submit_type === "add" ? 'Successfully added entry.' : 'Successfully updated entry.');
+            submit_type === "add" ? alerts.success_add() : alerts.success_update();
             setShowModal(false);
             fetchServices();
         } else if (response === -2) {
-            alert('Service already exists.');
+            alerts.already_exists_alert('Service already exists.');
         } else {
-            alert('Failed query.');
+            alerts.failed_query();
         }
     };
 
@@ -46,7 +46,7 @@ const ModalServices: React.FC<ComponentProps> = ({ showModal, setShowModal, form
             tabIndex={-1}
             className={`modal modal-blur fade ${showModal ? "show d-block" : "d-none"}`}
         >
-            <div className="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div className="modal-dialog modal-dialog-centered" role="document">
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title">{submit_type == "add" ? "Add New Service" : "Update Service Details"}</h5>
@@ -63,15 +63,15 @@ const ModalServices: React.FC<ComponentProps> = ({ showModal, setShowModal, form
                             <input type="hidden" className="form-control" name="service_id" value={form_data.service_id || ''} />
                             <div className="mb-3">
                                 <label className="form-label">Service Name</label>
-                                <input type="text" className="form-control" placeholder="Enter service name" name="service_name" value={form_data.service_name || ''} onChange={handleChange} required />
+                                <input type="text" className="form-control" placeholder="Enter service name" name="service_name" value={form_data.service_name || ''} onChange={handleChange} required autoComplete="off" />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label">Service Fee</label>
-                                <input type="number" className="form-control" placeholder="Enter service fee" name="service_fee" value={form_data.service_fee || ''} onChange={handleChange} required />
+                                <input type="number" className="form-control" placeholder="Enter service fee" name="service_fee" value={form_data.service_fee || ''} onChange={handleChange} required autoComplete="off" />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label">Description</label>
-                                <textarea className="form-control" placeholder="Enter service description" name="service_desc" value={form_data.service_desc || ''} onChange={handleChange}></textarea>
+                                <textarea className="form-control" placeholder="Enter service description" name="service_desc" value={form_data.service_desc || ''} onChange={handleChange} autoComplete="off"></textarea>
                             </div>
                         </div>
                         <div className="modal-footer">
