@@ -1,5 +1,4 @@
 
-import $ from 'jquery';
 export default function Home() {
   return (
     <div className="page-wrapper">
