@@ -1,6 +1,26 @@
+'use client'
 
-export default function Home() {
+
+import { useRouter } from "next/navigation";
+import Navbar from "./components/Navbar"
+import { useAuth } from "./context/AuthContext"
+import { useEffect } from "react";
+
+const Home: React.FC = () => {
+  const {user, logout} = useAuth();
+  const router = useRouter()
+
+  useEffect(() => {
+    console.log(user)
+    if(user?.name == null || user.name == ""){
+      router.push("/login")
+    }
+  }, [router])
+
+  
   return (
+    <>
+    <Navbar />
     <div className="page-wrapper">
       <div className="page-header d-print-none">
         <div className="container-xl">
@@ -23,5 +43,8 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </>
   )
 }
+
+export default Home
