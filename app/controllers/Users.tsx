@@ -29,13 +29,15 @@ class Users {
         return data.data
     }
 
-    async add(form_data: FormData) {
-        const data = await query.post("add_user", {
+    async register(form_data: FormData) {
+        const data = await query.post("register_rehab_center", {
             input: form_data
         })
     
         return data.data;
     }
+
+    
 
     async update(form_data: any) {
         const data = await query.post("update_user", {
@@ -58,7 +60,7 @@ class Users {
 
     async login(form_data: any) {
         try {
-            const response = await query.get("login_user", {
+            const response = await query.post("login_user", {
                 input: form_data
             })
             console.log("fetching", response.data)

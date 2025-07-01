@@ -4,33 +4,7 @@ import Menus from "./Menus";
 import Link from "next/link";
 
 const Navbar = () => {
-    useEffect(() => {
-        // Create a <script> element dynamically
-        const script = document.createElement('script');
-        script.src = 'dist/js/tabler.min.js'; // Path to your minified JS file
-        script.async = true;  // Optional: Load the script asynchronously
-        script.onload = () => {
-          console.log('Minified script loaded successfully');
-        };
-
-        const script_list = document.createElement('script');
-        script_list.src = 'dist/libs/list.js/dist/list.min.js';
-        script_list.async = true;  // Optional: Load the script asynchronously
-        script_list.onload = () => {
-          console.log('list script loaded successfully');
-        };
-
-        
-    
-        // Append the script to the body of the page
-        document.body.appendChild(script);
-    
-        // Clean up the script when the component unmounts
-        return () => {
-          document.body.removeChild(script);
-        };
-      }, []);  // Empty dependency array ensures the effect runs only once
-
+ 
     return(
         <>
         <header className="navbar navbar-expand-md d-print-none" >

@@ -10,12 +10,13 @@ const Home: React.FC = () => {
   const {user, logout} = useAuth();
   const router = useRouter()
 
-  useEffect(() => {
-    console.log(user)
-    if(user?.name == null || user.name == ""){
-      router.push("/login")
-    }
-  }, [router])
+
+  // useEffect(() => {
+  //   if (!user || !user.rehab_center_id) {
+  //     router.push("/login");
+  //   }
+  // }, [user]);
+
 
   
   return (
