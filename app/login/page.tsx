@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext';
 import alerts from '../components/Alerts';
 import users from '../controllers/Users';
 import globals from '../controllers/Globals';
 
 const Login = () => {
-  const { login } = useAuth();
   const router = useRouter();
 
   const [form_data, setFormData] = useState<any>({});
@@ -20,7 +18,6 @@ const Login = () => {
   const response = await users.login(form_data);
 
   if (response && response.user_id) {
-    login(response); 
     alerts.success_add('Login successful!');
     router.push('/');
   } else {
@@ -29,7 +26,7 @@ const Login = () => {
 };
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && localStorage.getItem('esf_jc_user_token')) {
+    if (typeof window !== 'undefined' && localStorage.getItem('rm_user_token')) {
       router.push('/');
     }
   }, [router]);

@@ -4,24 +4,10 @@
 import { useRouter } from "next/navigation";
 import Navbar from "./components/Navbar"
 import { useAuth } from "./context/AuthContext"
-import { useEffect } from "react";
 
 const Home: React.FC = () => {
-  const {user, logout} = useAuth();
-  const router = useRouter()
-
-
-  // useEffect(() => {
-  //   if (!user || !user.rehab_center_id) {
-  //     router.push("/login");
-  //   }
-  // }, [user]);
-
-
-  
   return (
     <>
-    <Navbar />
     <div className="page-wrapper">
       <div className="page-header d-print-none">
         <div className="container-xl">

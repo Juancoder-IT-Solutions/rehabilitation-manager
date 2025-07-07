@@ -1,10 +1,10 @@
+'use client';
 
 import { Geist, Geist_Mono } from "next/font/google";
-// import "./globals.css";
-import "../public/dist/css/tabler.min.css"
-import "../public/dist/css/tabler-vendors.min.css"
+import "../public/dist/css/tabler.min.css";
+import "../public/dist/css/tabler-vendors.min.css";
 import Navbar from "./components/Navbar";
-import { AuthProvider } from "./context/AuthContext";
+import { usePathname } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,19 +16,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+
+  const hideNavbarPaths = ["/login", "/register-rehab-center"];
+  const showNavbar = !hideNavbarPaths.includes(pathname);
+
   return (
-    <AuthProvider>
-      <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable}`}>
-          {children}
-        </body>
-      </html>
-    </AuthProvider>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        {showNavbar && <Navbar />}
+        {children}
+      </body>
+    </html>
   );
 }
