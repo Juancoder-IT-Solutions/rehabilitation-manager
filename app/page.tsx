@@ -4,8 +4,18 @@ import { useEffect, useState } from "react";
 import { LuBookHeart, LuFileText } from "react-icons/lu";
 import admissionController from "./controllers/Admission";
 import servicesController from "./controllers/Services";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 const Home: React.FC = () => {
+
+  const { data: session, status } = useSession()
+  let session_user: any = session?.user
+
+  if (status === "unauthenticated") {
+    redirect('/login')
+  }
+
   const [totalServices, setTotalServices] = useState(0);
   const [totalAdmissions, setTotalAdmissions] = useState(0);
 

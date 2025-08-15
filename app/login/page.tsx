@@ -1,29 +1,50 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import alerts from '../components/Alerts';
 import users from '../controllers/Users';
-import globals from '../controllers/Globals';
+import { signIn, useSession } from 'next-auth/react';
 
 const Login = () => {
   const router = useRouter();
+  const { data: session, status } = useSession()
+  let session_user: any = session?.user
+  const user_id: any = session_user?.id;
+
+  if (status !== "unauthenticated") {
+    redirect('/')
+  }
 
   const [form_data, setFormData] = useState<any>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
 
   const handleSubmit = async (e: any) => {
-  e.preventDefault();
-  const response = await users.login(form_data);
+    e.preventDefault();
+    const user = await users.login(form_data);
+    if (user.user_id > 0) {
+        const res = await signIn('credentials', {
+          redirect: false,
+          id: user.user_id,
+          email: user.user_category,
+          username: form_data.username,
+          password: form_data.password,
+          callbackUrl: '/',
+        })
 
-  if (response && response.user_id) {
-    alerts.success_add('Login successful!');
-    router.push('/');
-  } else {
-    alerts.warning_alert('Invalid username or password.');
-  }
-};
+        if (res?.error) {
+          alerts.error('Invalid credentials! Please check your username and password.')
+          return
+        }
+
+        router.push('/')
+      } else if (user === -1 || user === -2) {
+        alerts.error('Invalid credentials! Please check your username and password.')
+      } else {
+        alerts.warning()
+      }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined' && localStorage.getItem('rm_user_token')) {

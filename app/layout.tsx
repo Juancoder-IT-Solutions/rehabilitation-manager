@@ -5,6 +5,7 @@ import "../public/dist/css/tabler.min.css";
 import "../public/dist/css/tabler-vendors.min.css";
 import Navbar from "./components/Navbar";
 import { usePathname } from "next/navigation";
+import Providers from "./Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,16 +22,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-
-  const hideNavbarPaths = ["/login", "/register-rehab-center"];
-  const showNavbar = !hideNavbarPaths.includes(pathname);
-
+  
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {showNavbar && <Navbar />}
-        {children}
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import Menus from "./Menus";
 import Link from "next/link";
 import { FaUser } from "react-icons/fa";
+import { useSession } from "next-auth/react";
 // import { signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
@@ -32,11 +33,11 @@ const Navbar = () => {
             document.body.removeChild(script);
         };
     }, []);  // Empty dependency array ensures the effect runs only once
+    
+    const {data: session, status} = useSession()
+    let user_session: any = session?.user
 
-    // const {data: session, status} = useSession()
-    // let user_session: any = session?.user
-
-    // if(status === "unauthenticated") return null
+    if(status === "unauthenticated") return null
     
 
     return (
