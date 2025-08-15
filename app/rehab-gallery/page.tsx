@@ -8,6 +8,7 @@ import DataTable from 'react-data-table-component';
 import { Spinner, Button } from 'react-bootstrap';
 import globals from '../controllers/Globals';
 import ModalGallery from './modalGallery';
+import { wrap } from 'module';
 
 const ServicesPage = () => {
   const [listServices, setListServices] = useState([]);
@@ -34,7 +35,17 @@ const ServicesPage = () => {
   };
 
   const columns = [
-    { name: '#', selector: (row:any) => row.count, sortable: true },
+    {
+      name: 'Actions',
+      cell: (row:any) => (
+        <div className="btn-list flex-nowrap">
+          <a href="#" onClick={() => handleUpdate(row)} className="btn btn-primary">
+            <FaPencilAlt />
+          </a>
+        </div>
+      ),
+    },
+    { name: '#', selector: (row:any) => row.count, sortable: true, wrap: true },
     {
       name: 'Image',
       cell: (row:any) => (
@@ -45,21 +56,12 @@ const ServicesPage = () => {
           onError={(e) => { e.currentTarget.src = no_image; }}
         />
       ),
+      wrap: true,
     },
     {
       name: 'Date Last Modified',
       selector: (row:any) => row.date_added, // Fix to show the correct date
-      sortable: true
-    },
-    {
-      name: 'Actions',
-      cell: (row:any) => (
-        <div className="btn-list flex-nowrap">
-          <a href="#" onClick={() => handleUpdate(row)} className="btn btn-primary">
-            <FaPencilAlt />
-          </a>
-        </div>
-      ),
+      sortable: true, wrap: true
     }
   ];
   

@@ -63,14 +63,14 @@ class Alerts {
         //     icon: "success"
         // });
         await this.Toast.fire({
-            icon: "warning",
+            icon: "error",
             title: message,
         });
     }
 
     
 
-    async failed_query(message = "Something went wrong! Please try again.") {
+    async failed_query(message = "Something went wrong! Please contact Juancoder IT Solutions for assistance.") {
         Swal.fire({
             title: "Oops!",
             text: message,

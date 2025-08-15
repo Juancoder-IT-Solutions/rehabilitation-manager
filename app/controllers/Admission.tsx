@@ -36,6 +36,21 @@ class AdmissionController {
         return data.data
     }
 
+    async total_admission(){
+        try {
+            const response  = query.get("total_admission",{
+                input: {
+                }
+            });
+      
+            console.log("fetching",response)
+            return response
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return error
+        }
+    }
+
 }
 
 let admissionController = new AdmissionController

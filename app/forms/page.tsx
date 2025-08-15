@@ -1,36 +1,35 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FaEye, FaEyeSlash, FaPencilAlt, FaPlus, FaTasks, FaTrashAlt } from 'react-icons/fa';
+import { FaPlus, FaTasks, FaTrashAlt } from 'react-icons/fa';
 import Footer from '../components/Footer';
-import servicesController from '../controllers/Services';
+import inputsController from '../controllers/Inputs';
 import DataTable from 'react-data-table-component';
 import { Spinner, FormControl, InputGroup, Button } from 'react-bootstrap';
-import ModalServices from './modalServices';
-import globals from '../controllers/Globals';
+import ModalInputs from './modalInputs';
 import { LuEqual, LuPencil } from 'react-icons/lu';
-import Link from 'next/link';
-import ModalStages from './modalStages';
 import alerts from '../components/Alerts';
+import ModalInputOptions from './ModalInputOptions';
 
-const ServicesPage = (params: any) => {
-  const { id } = params;
+const FormPage = () => {
   const [listServices, setListServices] = useState([]);
-  const [listStages, setListStages] = useState([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
   const [loading, setLoading] = useState(true);
   const [filterText, setFilterText] = useState('');
   const [form_data, setFormData] = useState({});
-  const [form_stages_data, setFormStagesData] = useState({});
   const [submit_type, setSubmitType] = useState('add');
   const [showModal, setShowModal] = useState(false);
-  const [showStagesModal, setShowStagesModal] = useState(false);
-  const [serviceID, setServiceID] = useState(0);
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [currentInputId, setCurrentInputId] = useState<number | null>(null);
 
+  const openOptionsModal = (input_id: number) => {
+    setCurrentInputId(input_id);
+    setShowOptionsModal(true);
+  };
 
-  const fetchServices = async () => {
+  const fetchInputs = async () => {
     try {
-      const response = await servicesController.fetch();
+      const response = await inputsController.fetch();
       setListServices(response.data);
     } catch (error) {
       console.error('Failed to fetch services:', error);
@@ -38,18 +37,6 @@ const ServicesPage = (params: any) => {
       setLoading(false);
     }
   };
-
-  const fetchStages = async (id: any) => {
-    try {
-      const response = await servicesController.fetch_stages(id);
-      setListStages(response.data);
-    } catch (error) {
-      console.error('Failed to fetch services:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
 
   const columns = [
     {
@@ -66,22 +53,34 @@ const ServicesPage = (params: any) => {
               <LuEqual className="text-gray-600" size={18} />
             </button>
             <div className="dropdown-menu dropdown-menu-end mt-2 p-2 rounded-lg shadow-lg bg-white w-40 right-0">
-              <a href="#" className="dropdown-item cursor-pointer px-3 py-2 hover:bg-gray-600 rounded" onClick={() => handleUpdate(row)}>
+              {/* Edit */}
+              <a
+                href="#"
+                className="dropdown-item cursor-pointer px-3 py-2 hover:bg-gray-600 rounded"
+                onClick={() => handleUpdate(row)}
+              >
                 <LuPencil />&nbsp; Edit
               </a>
-              <a href="#" className="dropdown-item cursor-pointer px-3 py-2 hover:bg-gray-600 rounded" onClick={() => showStages(row.service_id)}>
-                <FaTasks /> &nbsp; Stages
-              </a>
+
+              {row.input_type === 'select' && (
+                <a
+                  href="#"
+                  className="dropdown-item cursor-pointer px-3 py-2 hover:bg-gray-600 rounded"
+                  onClick={() => openOptionsModal(row.input_id)}
+                >
+                  <FaTasks /> &nbsp; Add Options
+                </a>
+              )}
+
             </div>
           </div>
         </div>
       )
     },
     { name: <div style={{ whiteSpace: "normal", wordWrap: "break-word" }}>#</div>, selector: (row: any) => row.count, sortable: true, wrap: true },
-    { name: <div style={{ whiteSpace: "normal", wordWrap: "break-word" }}>Service</div>, selector: (row: any) => row.service_name, sortable: true, wrap: true },
-    { name: <div style={{ whiteSpace: "normal", wordWrap: "break-word" }}>Fee</div>, selector: (row: any) => globals.formatNumber(row.service_fee), sortable: true },
-    { name: <div style={{ whiteSpace: "normal", wordWrap: "break-word" }}>Description</div>, selector: (row: any) => row.service_desc, sortable: true, wrap: true },
-    { name: <div style={{ whiteSpace: "normal", wordWrap: "break-word" }}>Date Last Modified</div>, selector: (row: any) => row.date_updated, sortable: true, wrap: true }
+    { name: <div style={{ whiteSpace: "normal", wordWrap: "break-word" }}>Label</div>, selector: (row: any) => row.input_label, sortable: true, wrap: true },
+    { name: <div style={{ whiteSpace: "normal", wordWrap: "break-word" }}>Type</div>, selector: (row: any) => row.input_type, sortable: true },
+    { name: <div style={{ whiteSpace: "normal", wordWrap: "break-word" }}>Required</div>, selector: (row: any) => row.input_require == 1 ? "Yes" : "No", sortable: true, wrap: true },
   ];
 
   const handleUpdate = (row: any) => {
@@ -97,8 +96,9 @@ const ServicesPage = (params: any) => {
   );
 
   useEffect(() => {
-    fetchServices();
+    fetchInputs();
   }, []);
+
 
   const handleDelete = () => {
     if (selectedRows.length === 0) {
@@ -109,7 +109,7 @@ const ServicesPage = (params: any) => {
     alerts.confirm_action("Are you sure you want to delete selected entries?", "Yes, delete it", "No, cancel")
       .then((result: any) => {
         if (result.isConfirmed) {
-          deleteEntry(selectedRows.map((row: any) => row.service_id));
+          deleteEntry(selectedRows.map((row: any) => row.input_id));
         } else {
           alerts.confirm_action_cancel();
         }
@@ -117,15 +117,13 @@ const ServicesPage = (params: any) => {
   };
 
   const deleteEntry = async (selectedRows: any) => {
-    console.log("select ", selectedRows);
-    // setLoading(true);
     try {
-      const response = await servicesController.delete_all(selectedRows);
+      const response = await inputsController.delete_all(selectedRows);
       if (response <= 0) {
         alerts.warning('Failed to delete selected entries.');
       } else {
         alerts.success_delete();
-        fetchServices();
+        fetchInputs();
       }
     } catch (error) {
       console.error('Failed to fetch services:', error);
@@ -134,16 +132,11 @@ const ServicesPage = (params: any) => {
     }
   }
 
+
   const addModal = () => {
     setShowModal(true);
     setSubmitType('add');
     setFormData([]);
-  }
-
-  const showStages = (id: any) => {
-    setServiceID(id);
-    fetchStages(id);
-    setShowStagesModal(true);
   }
 
   return (
@@ -152,8 +145,8 @@ const ServicesPage = (params: any) => {
         <div className='container-xl'>
           <div className='row g-2 align-items-center'>
             <div className='col'>
-              <div className='page-pretitle'>Manage Services</div>
-              <h2 className='page-title'>Services</h2>
+              <div className='page-pretitle'>Manage Form Inputs</div>
+              <h2 className='page-title'>Inputs</h2>
             </div>
             <div className='col-auto ms-auto d-print-none'>
               <div className='btn-list'>
@@ -206,13 +199,19 @@ const ServicesPage = (params: any) => {
         </div>
       </div>
 
-      <ModalServices showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchServices={fetchServices} submit_type={submit_type} />
+      <ModalInputs showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchInputs={fetchInputs} submit_type={submit_type} />
 
-      <ModalStages showStagesModal={showStagesModal} setShowStagesModal={setShowStagesModal} form_stages_data={form_stages_data} setFormStagesData={setFormStagesData} fetchServices={fetchServices} serviceID={serviceID} listStages={listStages} fetchStages={fetchStages} />
+      <ModalInputOptions
+        show={showOptionsModal}
+        setShow={setShowOptionsModal}
+        input_id={currentInputId}
+        fetchInputs={fetchInputs}
+      />
+
 
       <Footer />
     </div>
   );
 };
 
-export default ServicesPage;
+export default FormPage;

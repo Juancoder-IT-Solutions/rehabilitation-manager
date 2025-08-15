@@ -1,24 +1,22 @@
-'use client';
+'use client'
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
+// Define types for the decoded JWT token and user object
 interface User {
-  user_id: string;
-  username: string;
-  rehab_center_id: string;
-  rehab_center_name: string;
-  rehab_center_city: string;
-  rehab_center_complete_address: string;
-  rehab_center_coordinates: string;
+  id: string;
+  name: string;
+  email: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (user: User) => void;
+  login: (user: {}) => void;
   logout: () => void;
 }
 
+// Define the types for the props, including the children prop
 interface AuthProviderProps {
-  children: ReactNode;
+  children: ReactNode;  // Specify that children will be of type ReactNode
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,20 +33,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Load from localStorage on initial load
-    const storedUser = localStorage.getItem('rehab_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
   }, []);
 
-  const login = (userData: User) => {
-    localStorage.setItem('rehab_user', JSON.stringify(userData));
-    setUser(userData);
+  const login = (user: any) => {
+    setUser(user)
   };
 
   const logout = () => {
-    localStorage.removeItem('rehab_user');
     setUser(null);
   };
 

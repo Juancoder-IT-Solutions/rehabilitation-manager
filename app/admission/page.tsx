@@ -6,10 +6,10 @@ import Footer from '../components/Footer';
 import admissionController from '../controllers/Admission';
 import DataTable from 'react-data-table-component';
 import { Spinner, FormControl, InputGroup, Button } from 'react-bootstrap';
-import ModalServices from './modalServices';
+import ModalAdmision from './modalAdmission';
 import globals from '../controllers/Globals';
 
-const ServicesPage = () => {
+const AdmissionPage = () => {
   const [listServices, setListServices] = useState([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
   const [loading, setLoading] = useState(true);
@@ -32,9 +32,9 @@ const ServicesPage = () => {
 
   const columns = [
     { name: '#', selector: (row: any) => row.count, sortable: true },
-    { name: 'Service', selector: (row: any) => row.service_name, sortable: true },
-    { name: 'Fee', selector: (row: any) => globals.formatNumber(row.service_fee), sortable: true },
-    { name: 'Description', selector: (row: any) => row.service_desc, sortable: true },
+    { name: 'Name', selector: (row: any) => row.user, sortable: true },
+    { name: 'Service', selector: (row: any) => globals.formatNumber(row.service), sortable: true },
+    { name: 'Admitting Physician', selector: (row: any) => row.admitting_physician, sortable: true },
     { name: 'Date Last Modified', selector: (row: any) => row.date_updated, sortable: true }, {
       name: 'Actions',
       cell: (row: any) => (
@@ -61,7 +61,7 @@ const ServicesPage = () => {
   );
 
   useEffect(() => {
-    fetchEntry();
+    // fetchEntry();
   }, []);
 
   const handleDelete = () => {
@@ -161,11 +161,11 @@ const ServicesPage = () => {
         </div>
       </div>
 
-      <ModalServices showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchEntry={fetchEntry} submit_type={submit_type} />
+      <ModalAdmision showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchEntry={fetchEntry} submit_type={submit_type} />
 
       <Footer />
     </div>
   );
 };
 
-export default ServicesPage;
+export default AdmissionPage;

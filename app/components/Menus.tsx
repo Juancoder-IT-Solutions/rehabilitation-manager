@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { LuBookCheck, LuBookImage, LuBookOpen, LuBookUser, LuFile, LuFileArchive, LuFileText, LuHouse } from "react-icons/lu"
 
 const Menus = () => {
     return (
@@ -10,7 +11,7 @@ const Menus = () => {
                             <li className="nav-item active">
                                 <Link className="nav-link" href="/" >
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg>
+                                        <LuHouse size={24} />
                                     </span>
                                     <span className="nav-link-title">Home</span>
                                 </Link>
@@ -18,22 +19,28 @@ const Menus = () => {
                             <li className="nav-item">
                                 <a className="nav-link" href="/admission">
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-user-plus" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                            <path d="M8 7a4 4 0 1 0 0 8a4 4 0 0 0 0 -8" />
-                                            <path d="M16 11h6m-3 -3v6" />
-                                            <path d="M6 21v-2a4 4 0 0 1 4 -4h4" />
-                                        </svg>
+                                        <LuBookUser size={24} />
                                     </span>
                                     <span className="nav-link-title">
                                         Admission
                                     </span>
                                 </a>
                             </li>
+                            
+                            <li className="nav-item">
+                                <a className="nav-link" href="/forms">
+                                    <span className="nav-link-icon d-md-none d-lg-inline-block">
+                                        <LuFileText size={24} />
+                                    </span>
+                                    <span className="nav-link-title">
+                                        Forms
+                                    </span>
+                                </a>
+                            </li>
                             <li className="nav-item">
                                 <a className="nav-link" href="/services">
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-message-2-star"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 9h8" /><path d="M8 13h4.5" /><path d="M10 19l-1 -1h-3a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v4.5" /><path d="M17.8 20.817l-2.172 1.138a.392 .392 0 0 1 -.568 -.41l.415 -2.411l-1.757 -1.707a.389 .389 0 0 1 .217 -.665l2.428 -.352l1.086 -2.193a.392 .392 0 0 1 .702 0l1.086 2.193l2.428 .352a.39 .39 0 0 1 .217 .665l-1.757 1.707l.414 2.41a.39 .39 0 0 1 -.567 .411l-2.172 -1.138z" /></svg>
+                                        <LuBookOpen size={24} />
                                     </span>
                                     <span className="nav-link-title">
                                         Services
@@ -43,14 +50,7 @@ const Menus = () => {
                             <li className="nav-item">
                                 <a className="nav-link" href="/rehab-gallery">
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-book">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
-                                            <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
-                                            <path d="M3 6l0 13" />
-                                            <path d="M12 6l0 13" />
-                                            <path d="M21 6l0 13" />
-                                        </svg>
+                                        <LuBookImage size={24} />
                                     </span>
                                     <span className="nav-link-title">
                                         Gallery
@@ -100,10 +100,10 @@ const Menus = () => {
                         <div className="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
                             <form action="/" method="get" autoComplete="off" noValidate>
                                 <div className="input-icon">
-                                    <span className="input-icon-addon">
+                                    {/* <span className="input-icon-addon">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
                                     </span>
-                                    <input type="text" className="form-control" placeholder="Search…" aria-label="Search in website" />
+                                    <input type="text" className="form-control" placeholder="Search…" aria-label="Search in website" /> */}
                                 </div>
                             </form>
                         </div>
