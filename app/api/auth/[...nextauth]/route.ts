@@ -7,6 +7,7 @@ const authOptions: NextAuthOptions = {
             name: 'credentials',
             credentials: {
                 id: {label: "Id", type: "text"},
+                role: {label: "role", type: "text"},
                 username: {label: "Username", type: "text"},
                 password: { label: "Password", type: "password"}
             },
@@ -14,6 +15,7 @@ const authOptions: NextAuthOptions = {
                 const { username, password } = credentials ?? {};
                 const user = {
                     id: `${credentials?.id}`,
+                    role: `${credentials?.role}`,
                     name: credentials?.username,
                     username: credentials?.username
                 }
@@ -46,9 +48,9 @@ const authOptions: NextAuthOptions = {
         },
         async session({ session, token }) {
             // Add id from token to session.user
-            if (token.id) {
-                let session_user: any = session.user
-                session_user.id = token.id;
+            if (session.user) {
+                session.user.id = token.id as string
+                session.user.role = token.role as string
             }
             return session;
         },

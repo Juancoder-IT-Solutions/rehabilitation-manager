@@ -1,3 +1,4 @@
+'use client'
 import Link from "next/link"
 import { LuBookCheck, LuBookImage, LuBookOpen, LuBookUser, LuFile, LuFileArchive, LuFileText, LuHouse } from "react-icons/lu"
 

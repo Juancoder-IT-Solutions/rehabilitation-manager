@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import alerts from '../components/Alerts'
 import users from '../controllers/Users'
-import { resolve } from 'path'
 
 const ProfilePage = () => {
   // const { data: session, status } = useSession()
@@ -44,12 +43,12 @@ const ProfilePage = () => {
     e.preventDefault()
     setSavingProfile(true)
     try {
-      const response = await users.update_profile(sessionUser.id, username);
-      if (response > 0) {
-        alerts.success_update('Profile updated successfully.')
-      } else {
-        alerts.failed_query();
-      }
+      // const response = await users.update_profile(sessionUser.id, username);
+      // if (response > 0) {
+      //   alerts.success_update('Profile updated successfully.')
+      // } else {
+      //   alerts.failed_query();
+      // }
     } catch (err: any) {
       alerts.error(err?.message || 'Failed to update profile.')
     } finally {
@@ -65,19 +64,19 @@ const ProfilePage = () => {
     }
     setSavingPassword(true)
     try {
-      const response = await users.update_password(sessionUser.id, oldPassword, newPassword,)
-      if (response > 0) {
-        alerts.success_update('Password changed successfully.')
-        setOldPassword('')
-        setNewPassword('')
-        setConfirmPassword('')
-      }else if(response === -1){
-        alerts.warning("User account not found.");
-      }else if(response === -2){
-        alerts.warning("Incorrect old password");
-      }else{
-        alerts.failed_query();
-      }
+      // const response = await users.update_password(sessionUser.id, oldPassword, newPassword,)
+      // if (response > 0) {
+      //   alerts.success_update('Password changed successfully.')
+      //   setOldPassword('')
+      //   setNewPassword('')
+      //   setConfirmPassword('')
+      // }else if(response === -1){
+      //   alerts.warning("User account not found.");
+      // }else if(response === -2){
+      //   alerts.warning("Incorrect old password");
+      // }else{
+      //   alerts.failed_query();
+      // }
 
     } catch (err: any) {
       alerts.error(err?.message || 'Failed to change password.')

@@ -9,8 +9,6 @@ import { signIn, useSession } from 'next-auth/react';
 const Login = () => {
   const router = useRouter();
   const { data: session, status } = useSession()
-  let session_user: any = session?.user
-  const user_id: any = session_user?.id;
 
   if (status !== "unauthenticated") {
     redirect('/')
@@ -23,22 +21,25 @@ const Login = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const user = await users.login(form_data);
+    const username = form_data.username
+    const password = form_data.password
     if (user.user_id > 0) {
         const res = await signIn('credentials', {
           redirect: false,
           id: user.user_id,
-          email: user.user_category,
-          username: form_data.username,
-          password: form_data.password,
-          callbackUrl: '/',
+          role: user.user_category,
+          username,
+          password
         })
 
         if (res?.error) {
           alerts.error('Invalid credentials! Please check your username and password.')
           return
+        }else{
+          redirect("/")
         }
+        
 
-        router.push('/')
       } else if (user === -1 || user === -2) {
         alerts.error('Invalid credentials! Please check your username and password.')
       } else {
@@ -63,7 +64,7 @@ const Login = () => {
     <div className="container container-tight py-4">
       <div className="text-center mb-4">
         <a href="/" className="navbar-brand navbar-brand-autodark">
-          <img src="/static/logo.png" height="100" alt="Logo" />
+          <img src="./static/logo.svg" height="100" alt="Logo" />
         </a>
       </div>
 

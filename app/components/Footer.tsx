@@ -1,3 +1,4 @@
+'use client'
 const Footer = () => {
     return (
         <footer className="footer footer-transparent d-print-none">

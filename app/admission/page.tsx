@@ -161,7 +161,7 @@ const AdmissionPage = () => {
         </div>
       </div>
 
-      <ModalAdmision showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchEntry={fetchEntry} submit_type={submit_type} />
+      <ModalAdmision showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} handleSubmit={submit_type} />
 
       <Footer />
     </div>

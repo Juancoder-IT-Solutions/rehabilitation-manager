@@ -31,7 +31,7 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchCounts();
+    // fetchCounts();
   }, []);
 
   return (
@@ -41,6 +41,11 @@ const Home: React.FC = () => {
           <div className="row g-2 align-items-center">
             <div className="col">
               <h2 className="page-title">Home</h2>
+              <h2>
+                Username: {session?.user.name}
+                <br />
+                Role: {session?.user.role}
+              </h2>
             </div>
           </div>
         </div>

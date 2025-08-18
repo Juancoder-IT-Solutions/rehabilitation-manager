@@ -5,8 +5,8 @@ import sampleController from "../controllers/sample_controller"
 const About = () => {
 
     const test = async () => {
-       const data = await sampleController.sample_api()
-       console.log(data)
+    //    const data = await sampleController.sample_api()
+    //    console.log(data)
     }
 
     return (
