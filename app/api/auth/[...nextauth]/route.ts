@@ -8,6 +8,7 @@ const authOptions: NextAuthOptions = {
             credentials: {
                 id: {label: "Id", type: "text"},
                 role: {label: "role", type: "text"},
+                rehab_center_id: {label: "rehab_center_id", type: "text"},
                 username: {label: "Username", type: "text"},
                 password: { label: "Password", type: "password"}
             },
@@ -16,6 +17,7 @@ const authOptions: NextAuthOptions = {
                 const user = {
                     id: `${credentials?.id}`,
                     role: `${credentials?.role}`,
+                    rehab_center_id: `${credentials?.rehab_center_id}`,
                     name: credentials?.username,
                     username: credentials?.username
                 }
@@ -43,6 +45,8 @@ const authOptions: NextAuthOptions = {
         async jwt({token, user}) {
             if(user){
                 token.id = user.id
+                token.role = user.role
+                token.rehab_center_id = user.rehab_center_id
             }
             return token
         },
@@ -51,6 +55,7 @@ const authOptions: NextAuthOptions = {
             if (session.user) {
                 session.user.id = token.id as string
                 session.user.role = token.role as string
+                session.user.rehab_center_id = token.rehab_center_id as string
             }
             return session;
         },

@@ -8,9 +8,10 @@ interface ComponentProps {
     setFormData: (data: any) => void;
     fetchInputs: Function;
     submit_type: string;
+    rehab_center_id: any;
 }
 
-const ModalInputs: React.FC<ComponentProps> = ({ showModal, setShowModal, form_data, setFormData, fetchInputs, submit_type }) => {
+const ModalInputs: React.FC<ComponentProps> = ({ showModal, setShowModal, form_data, setFormData, fetchInputs, submit_type, rehab_center_id }) => {
 
     const handleChange = (e: any) => {
         setFormData((prevData: any) => ({
@@ -23,10 +24,11 @@ const ModalInputs: React.FC<ComponentProps> = ({ showModal, setShowModal, form_d
         e.preventDefault();
 
         let response;
+        const formdata = { ...form_data, rehab_center_id: rehab_center_id };
         if (submit_type === "add") {
-            response = await inputsController.add(form_data);
+            response = await inputsController.add(formdata);
         } else if (submit_type === "update") {
-            response = await inputsController.update(form_data);
+            response = await inputsController.update(formdata);
         }
 
         if (response === 1) {
@@ -101,7 +103,7 @@ const ModalInputs: React.FC<ComponentProps> = ({ showModal, setShowModal, form_d
                                 <select
                                     className="form-control"
                                     name="input_require"
-                                    value={form_data.input_require ?? 1}
+                                    value={form_data.input_require || 1}
                                     onChange={handleChange}
                                     required
                                 >

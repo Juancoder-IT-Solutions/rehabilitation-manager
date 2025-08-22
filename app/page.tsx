@@ -11,6 +11,7 @@ const Home: React.FC = () => {
 
   const { data: session, status } = useSession()
   let session_user: any = session?.user
+  const rehab_center_id = session?.user.rehab_center_id;
 
   if (status === "unauthenticated") {
     redirect('/login')
@@ -21,8 +22,8 @@ const Home: React.FC = () => {
 
   const fetchCounts = async () => {
     try {
-      const servicesRes = await servicesController.total_services();
-      const admissionsRes = await admissionController.total_admission();
+      const servicesRes = await servicesController.total_services(rehab_center_id);
+      const admissionsRes = await admissionController.total_admission(rehab_center_id);
       setTotalServices(servicesRes?.data || 0);
       setTotalAdmissions(admissionsRes?.data || 0);
     } catch (err) {
@@ -31,12 +32,12 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    // fetchCounts();
+    fetchCounts();
   }, []);
 
   return (
     <div className="page-wrapper">
-      <div className="page-header d-print-none">
+      {/* <div className="page-header d-print-none">
         <div className="container-xl">
           <div className="row g-2 align-items-center">
             <div className="col">
@@ -45,11 +46,13 @@ const Home: React.FC = () => {
                 Username: {session?.user.name}
                 <br />
                 Role: {session?.user.role}
+                <br />
+                Rehab ID: {session?.user.rehab_center_id}
               </h2>
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="page-body">
         <div className="container-xl">

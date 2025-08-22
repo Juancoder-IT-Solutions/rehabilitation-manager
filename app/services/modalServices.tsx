@@ -8,9 +8,10 @@ interface ComponentProps {
     setFormData: (data: any) => void;
     fetchServices: Function;
     submit_type: string;
+    rehab_center_id: any;
 }
 
-const ModalServices: React.FC<ComponentProps> = ({ showModal, setShowModal, form_data, setFormData, fetchServices, submit_type }) => {
+const ModalServices: React.FC<ComponentProps> = ({ showModal, setShowModal, form_data, setFormData, fetchServices, submit_type, rehab_center_id }) => {
 
     const handleChange = (e: any) => {
         setFormData((prevData: any) => ({
@@ -23,10 +24,11 @@ const ModalServices: React.FC<ComponentProps> = ({ showModal, setShowModal, form
         e.preventDefault();
 
         let response;
+        const formdata = { ...form_data, rehab_center_id:rehab_center_id };
         if (submit_type === "add") {
-            response = await servicesController.add(form_data);
+            response = await servicesController.add(formdata);
         } else if (submit_type === "update") {
-            response = await servicesController.update(form_data);
+            response = await servicesController.update(formdata);
         }
 
         if (response === 1) {

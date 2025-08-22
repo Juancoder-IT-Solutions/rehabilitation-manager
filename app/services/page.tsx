@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FaEye, FaEyeSlash, FaPencilAlt, FaPlus, FaTasks, FaTrashAlt } from 'react-icons/fa';
+import { FaPlus, FaTasks, FaTrashAlt } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import servicesController from '../controllers/Services';
 import DataTable from 'react-data-table-component';
@@ -9,12 +9,16 @@ import { Spinner, FormControl, InputGroup, Button } from 'react-bootstrap';
 import ModalServices from './modalServices';
 import globals from '../controllers/Globals';
 import { LuEqual, LuPencil } from 'react-icons/lu';
-import Link from 'next/link';
 import ModalStages from './modalStages';
 import alerts from '../components/Alerts';
+import { useSession } from "next-auth/react";
+import { redirect } from 'next/navigation';
 
-const ServicesPage = (params: any) => {
-  const { id } = params;
+const ServicesPage = () => {
+  const { data: session, status } = useSession()
+  // let session_user: any = session?.user
+  const rehab_center_id = session?.user?.rehab_center_id;
+
   const [listServices, setListServices] = useState([]);
   const [listStages, setListStages] = useState([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
@@ -27,10 +31,14 @@ const ServicesPage = (params: any) => {
   const [showStagesModal, setShowStagesModal] = useState(false);
   const [serviceID, setServiceID] = useState(0);
 
+  if (status === "unauthenticated") {
+    redirect('/login')
+  }
 
   const fetchServices = async () => {
+    console.log("rehab id", rehab_center_id);
     try {
-      const response = await servicesController.fetch();
+      const response = await servicesController.fetch(rehab_center_id);
       setListServices(response.data);
     } catch (error) {
       console.error('Failed to fetch services:', error);
@@ -41,7 +49,7 @@ const ServicesPage = (params: any) => {
 
   const fetchStages = async (id: any) => {
     try {
-      const response = await servicesController.fetch_stages(id);
+      const response = await servicesController.fetch_stages(id, rehab_center_id);
       setListStages(response.data);
     } catch (error) {
       console.error('Failed to fetch services:', error);
@@ -55,25 +63,19 @@ const ServicesPage = (params: any) => {
     {
       name: <div style={{ whiteSpace: "normal", wordWrap: "break-word" }}>Actions</div>,
       cell: (row: any) => (
-        <div className="relative">
-          <div className="dropdown">
-            <button
-              className="btn p-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-all"
-              data-bs-toggle="dropdown"
-              aria-expanded="true"
-              aria-label="Options"
-            >
-              <LuEqual className="text-gray-600" size={18} />
-            </button>
-            <div className="dropdown-menu dropdown-menu-end mt-2 p-2 rounded-lg shadow-lg bg-white w-40 right-0">
-              <a href="#" className="dropdown-item cursor-pointer px-3 py-2 hover:bg-gray-600 rounded" onClick={() => handleUpdate(row)}>
-                <LuPencil />&nbsp; Edit
-              </a>
-              <a href="#" className="dropdown-item cursor-pointer px-3 py-2 hover:bg-gray-600 rounded" onClick={() => showStages(row.service_id)}>
-                <FaTasks /> &nbsp; Stages
-              </a>
-            </div>
-          </div>
+        <div className="btn-group">
+          <button
+            className="btn btn-primary"
+            onClick={() => handleUpdate(row)}
+          >
+            <LuPencil size={14} /> Edit
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => showStages(row.service_id)}
+          >
+            <FaTasks size={14} /> Stages
+          </button>
         </div>
       )
     },
@@ -97,8 +99,11 @@ const ServicesPage = (params: any) => {
   );
 
   useEffect(() => {
-    fetchServices();
-  }, []);
+    if (status === "authenticated" && rehab_center_id) {
+      fetchServices();
+    }
+  }, [status, session]);
+
 
   const handleDelete = () => {
     if (selectedRows.length === 0) {
@@ -206,9 +211,9 @@ const ServicesPage = (params: any) => {
         </div>
       </div>
 
-      <ModalServices showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchServices={fetchServices} submit_type={submit_type} />
+      <ModalServices showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchServices={fetchServices} submit_type={submit_type} rehab_center_id={rehab_center_id} />
 
-      <ModalStages showStagesModal={showStagesModal} setShowStagesModal={setShowStagesModal} form_stages_data={form_stages_data} setFormStagesData={setFormStagesData} fetchServices={fetchServices} serviceID={serviceID} listStages={listStages} fetchStages={fetchStages} />
+      <ModalStages showStagesModal={showStagesModal} setShowStagesModal={setShowStagesModal} form_stages_data={form_stages_data} setFormStagesData={setFormStagesData} fetchServices={fetchServices} serviceID={serviceID} listStages={listStages} fetchStages={fetchStages} rehab_center_id={rehab_center_id} />
 
       <Footer />
     </div>

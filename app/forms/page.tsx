@@ -10,8 +10,12 @@ import ModalInputs from './modalInputs';
 import { LuEqual, LuPencil } from 'react-icons/lu';
 import alerts from '../components/Alerts';
 import ModalInputOptions from './ModalInputOptions';
+import { useSession } from 'next-auth/react';
 
 const FormPage = () => {
+  const { data: session, status } = useSession()
+  // let session_user: any = session?.user
+  const rehab_center_id = session?.user?.rehab_center_id;
   const [listServices, setListServices] = useState([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
   const [loading, setLoading] = useState(true);
@@ -28,8 +32,9 @@ const FormPage = () => {
   };
 
   const fetchInputs = async () => {
+
     try {
-      const response = await inputsController.fetch();
+      const response = await inputsController.fetch(rehab_center_id);
       setListServices(response.data);
     } catch (error) {
       console.error('Failed to fetch services:', error);
@@ -96,8 +101,10 @@ const FormPage = () => {
   );
 
   useEffect(() => {
-    fetchInputs();
-  }, []);
+    if (status === "authenticated" && rehab_center_id) {
+      fetchInputs();
+    }
+  }, [status, session]);
 
 
   const handleDelete = () => {
@@ -118,7 +125,7 @@ const FormPage = () => {
 
   const deleteEntry = async (selectedRows: any) => {
     try {
-      const response = await inputsController.delete_all(selectedRows);
+      const response = await inputsController.delete_all(selectedRows, rehab_center_id);
       if (response <= 0) {
         alerts.warning('Failed to delete selected entries.');
       } else {
@@ -199,13 +206,14 @@ const FormPage = () => {
         </div>
       </div>
 
-      <ModalInputs showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchInputs={fetchInputs} submit_type={submit_type} />
+      <ModalInputs showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchInputs={fetchInputs} submit_type={submit_type} rehab_center_id={rehab_center_id} />
 
       <ModalInputOptions
         show={showOptionsModal}
         setShow={setShowOptionsModal}
         input_id={currentInputId}
         fetchInputs={fetchInputs}
+        rehab_center_id={rehab_center_id}
       />
 
 

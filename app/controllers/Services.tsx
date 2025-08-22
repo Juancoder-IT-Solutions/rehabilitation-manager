@@ -6,11 +6,11 @@ class ServicesController {
         console.log("successfully loaded sample controller")
     }
 
-    async fetch() {
+    async fetch(rehab_center_id: any) {
         try {
-            const response = query.get("show_services", {
+            const response = await query.get("show_services",{
                 input: {
-                    rehab_center_id: 19
+                    rehab_center_id: rehab_center_id
                 }
             });
 
@@ -23,13 +23,15 @@ class ServicesController {
         }
     }
 
-    async fetch_stages(service_id: any) {
+    async fetch_stages(service_id: any, rehab_center_id: any) {
         try {
             const response = query.get("show_service_stages", {
                 input: {
-                    service_id: service_id
+                    service_id: service_id,
+                    rehab_center_id:rehab_center_id
                 }
             });
+            
 
             console.log("fetching", response)
             return response
@@ -39,11 +41,12 @@ class ServicesController {
         }
     }
 
-     async fetch_task(stage_id: any) {
+     async fetch_task(stage_id: any, rehab_center_id: any) {
         try {
             const response = query.get("show_service_task", {
                 input: {
-                    stage_id: stage_id
+                    stage_id: stage_id,
+                    rehab_center_id:rehab_center_id
                 }
             });
             console.log("fetching", response)
@@ -54,10 +57,11 @@ class ServicesController {
         }
     }
 
-    async delete_all(ids: any) {
+    async delete_all(ids: any, rehab_center_id: any) {
         const data = await query.post("delete_services", {
             input: {
-                ids: ids
+                ids: ids,
+                rehab_center_id:rehab_center_id
             }
         })
 
@@ -96,10 +100,11 @@ class ServicesController {
         return data.data;
     }
 
-    async delete_stages(id: any) {
+    async delete_stages(id: any, rehab_center_id: any) {
         const data = await query.post("delete_service_stages", {
             input: {
-                id: id
+                id: id,
+                rehab_center_id:rehab_center_id
             }
         })
 
@@ -122,10 +127,11 @@ class ServicesController {
         return data.data;
     }
 
-    async delete_task(id: any) {
+    async delete_task(id: any, rehab_center_id: any) {
         const data = await query.post("delete_service_stages_task", {
             input: {
-                id: id
+                id: id,
+                rehab_center_id:rehab_center_id
             }
         })
 
@@ -133,10 +139,11 @@ class ServicesController {
     }
 
     
-    async total_services(){
+    async total_services(rehab_center_id: any){
         try {
             const response  = query.get("total_services",{
                 input: {
+                    rehab_center_id:rehab_center_id
                 }
             });
       

@@ -13,6 +13,7 @@ interface ComponentProps {
     serviceID: any;
     listStages: any;
     fetchStages: any;
+    rehab_center_id: any
 }
 
 const ModalStages: React.FC<ComponentProps> = ({
@@ -23,11 +24,12 @@ const ModalStages: React.FC<ComponentProps> = ({
     fetchServices,
     serviceID,
     listStages,
-    fetchStages
+    fetchStages,
+    rehab_center_id
 }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedStage, setSelectedStage] = useState<any>({});
-    
+
     // Task modal state
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [taskName, setTaskName] = useState("");
@@ -39,6 +41,10 @@ const ModalStages: React.FC<ComponentProps> = ({
     const [editingName, setEditingName] = useState("");
     const [editingDesc, setEditingDesc] = useState("");
 
+    const [editingStageId, setEditingStageId] = useState<number | null>(null);
+    const [editingStageName, setEditingStageName] = useState("");
+
+
     const handleChange = (e: any) => {
         setFormStagesData((prevData: any) => ({
             ...prevData,
@@ -48,7 +54,7 @@ const ModalStages: React.FC<ComponentProps> = ({
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        const formdata = { ...form_stages_data, service_id: serviceID };
+        const formdata = { ...form_stages_data, service_id: serviceID, rehab_center_id: rehab_center_id };
         const response = await servicesController.add_stages(formdata);
         if (response === 1) {
             alerts.success_add();
@@ -61,18 +67,39 @@ const ModalStages: React.FC<ComponentProps> = ({
         }
     };
 
-    const handleUpdateStage = async () => {
-        const response = await servicesController.update_stages(selectedStage);
+    const startEditingStage = (stage: any) => {
+        setEditingStageId(stage.stage_id);
+        setEditingStageName(stage.stage_name);
+    };
+
+    const cancelEditingStage = () => {
+        setEditingStageId(null);
+        setEditingStageName("");
+    };
+
+    const saveEditingStage = async () => {
+        if (!editingStageId) return;
+
+        const formdata = {
+            stage_id: editingStageId,
+            stage_name: editingStageName,
+            service_id:serviceID,
+            rehab_center_id
+        };
+
+        const response = await servicesController.update_stages(formdata);
+
         if (response === 1) {
             alerts.success_update();
             fetchStages(serviceID);
-            setShowEditModal(false);
+            cancelEditingStage();
         } else if (response === -2) {
-            alerts.already_exists_alert("Service stage already exists.");
+            alerts.already_exists_alert("Stage already exists.");
         } else {
             alerts.failed_query();
         }
     };
+
 
     const handleDelete = (id: any) => {
         alerts.confirm_action("Are you sure you want to delete this entry?", "Yes, delete it", "No, cancel")
@@ -87,7 +114,7 @@ const ModalStages: React.FC<ComponentProps> = ({
 
     const deleteEntry = async (id: any) => {
         try {
-            const response = await servicesController.delete_stages(id);
+            const response = await servicesController.delete_stages(id, rehab_center_id);
             if (response <= 0) {
                 alerts.failed_query();
             } else {
@@ -102,7 +129,7 @@ const ModalStages: React.FC<ComponentProps> = ({
     // === TASK HANDLERS ===
     const fetchTasks = async (id: any) => {
         try {
-            const response = await servicesController.fetch_task(id);
+            const response = await servicesController.fetch_task(id, rehab_center_id);
             setTasks(response.data);
         } catch (error) {
             console.error("Error fetching tasks:", error);
@@ -122,7 +149,8 @@ const ModalStages: React.FC<ComponentProps> = ({
         const formdata = {
             task_name: taskName,
             task_desc: taskDesc,
-            stage_id: selectedStage.stage_id
+            stage_id: selectedStage.stage_id,
+            rehab_center_id: rehab_center_id
         };
 
         const response = await servicesController.add_task(formdata);
@@ -157,7 +185,8 @@ const ModalStages: React.FC<ComponentProps> = ({
         const formdata = {
             task_id: editingTaskId,
             task_name: editingName,
-            task_desc: editingDesc
+            task_desc: editingDesc,
+            rehab_center_id
         };
 
         const response = await servicesController.update_task(formdata);
@@ -186,7 +215,7 @@ const ModalStages: React.FC<ComponentProps> = ({
 
     const deleteTask = async (id: any) => {
         try {
-            const response = await servicesController.delete_task(id);
+            const response = await servicesController.delete_task(id, rehab_center_id);
             if (response <= 0) {
                 alerts.failed_query();
             } else {
@@ -241,35 +270,55 @@ const ModalStages: React.FC<ComponentProps> = ({
                                         listStages.map((stage: any, index: any) => (
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
-                                                <td>{stage.stage_name}</td>
-                                                <td style={{ width: '200px' }}>
-                                                    <div className="btn-group">
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-primary"
-                                                            onClick={() => handleOpenTaskModal(stage)}
-                                                        >
-                                                            <FaPlusCircle />&nbsp; Task
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-info"
-                                                            onClick={() => {
-                                                                setSelectedStage(stage);
-                                                                setShowEditModal(true);
-                                                            }}
-                                                        >
-                                                            <FaPencil />&nbsp; Edit
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-danger"
-                                                            onClick={() => handleDelete(stage.stage_id)}
-                                                        >
-                                                            <FaTrash />&nbsp; Delete
-                                                        </button>
-                                                    </div>
+                                                <td>
+                                                    {editingStageId === stage.stage_id ? (
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            value={editingStageName}
+                                                            onChange={(e) => setEditingStageName(e.target.value)}
+                                                        />
+                                                    ) : (
+                                                        stage.stage_name
+                                                    )}
                                                 </td>
+                                                <td style={{ width: '200px' }}>
+                                                    {editingStageId === stage.stage_id ? (
+                                                        <>
+                                                            <button className="btn btn-primary me-1" onClick={saveEditingStage}>
+                                                                <FaCheck />
+                                                            </button>
+                                                            <button className="btn btn-secondary" onClick={cancelEditingStage}>
+                                                                <FaTimes />
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <div className="btn-group">
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-primary"
+                                                                onClick={() => handleOpenTaskModal(stage)}
+                                                            >
+                                                                <FaPlusCircle />&nbsp; Task
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-info"
+                                                                onClick={() => startEditingStage(stage)}
+                                                            >
+                                                                <FaPencil />&nbsp; Edit
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-danger"
+                                                                onClick={() => handleDelete(stage.stage_id)}
+                                                            >
+                                                                <FaTrash />&nbsp; Delete
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </td>
+
                                             </tr>
                                         ))
                                     ) : (

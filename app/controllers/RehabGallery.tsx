@@ -6,10 +6,11 @@ class GalleryController {
         console.log("successfully loaded sample controller")
     }
 
-    async fetch(){
+    async fetch(rehab_center_id: any){
         try {
             const response  = query.get("show_rahab_gallery",{
                 input: {
+                    rehab_center_id:rehab_center_id
                 }
             });
       
@@ -21,10 +22,11 @@ class GalleryController {
         }
     }
 
-    async delete_all(ids: any) {
+    async delete_all(ids: any, rehab_center_id: any) {
         const data = await query.post("delete_rehab_gallery", {
             input: {
-                ids: ids
+                ids: ids,
+                rehab_center_id:rehab_center_id
             }
         })
 

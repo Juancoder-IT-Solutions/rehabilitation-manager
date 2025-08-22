@@ -24,27 +24,28 @@ const Login = () => {
     const username = form_data.username
     const password = form_data.password
     if (user.user_id > 0) {
-        const res = await signIn('credentials', {
-          redirect: false,
-          id: user.user_id,
-          role: user.user_category,
-          username,
-          password
-        })
+      const res = await signIn('credentials', {
+        redirect: false,
+        id: user.user_id,
+        role: user.user_category,
+        rehab_center_id: user.rehab_center_id,
+        username,
+        password
+      })
 
-        if (res?.error) {
-          alerts.error('Invalid credentials! Please check your username and password.')
-          return
-        }else{
-          redirect("/")
-        }
-        
-
-      } else if (user === -1 || user === -2) {
+      if (res?.error) {
         alerts.error('Invalid credentials! Please check your username and password.')
+        return
       } else {
-        alerts.warning()
+        redirect("/")
       }
+
+
+    } else if (user === -1 || user === -2) {
+      alerts.error('Invalid credentials! Please check your username and password.')
+    } else {
+      alerts.warning()
+    }
   };
 
   useEffect(() => {
@@ -64,7 +65,7 @@ const Login = () => {
     <div className="container container-tight py-4">
       <div className="text-center mb-4">
         <a href="/" className="navbar-brand navbar-brand-autodark">
-          <img src="./static/logo.svg" height="100" alt="Logo" />
+          <img src="./static/logo.png" height="100" alt="Logo" />
         </a>
       </div>
 
@@ -160,18 +161,104 @@ const Login = () => {
                 ></button>
               </div>
               <div className="modal-body" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <h2 className="mb-3">Data Privacy Agreement</h2>
                 <p>
-                  By creating a Rehab Center account, you agree to the following:
+                  This Data Privacy Agreement (“Agreement”) is entered into by and between:
+                </p>
+                <p>
+                  <strong>BERM: Block Chain Enhanced Rehabilitation App</strong>, hereinafter referred to as the
+                  “Data Controller”,
+                </p>
+                <p>-and-</p>
+                <p>
+                  <strong>[Name of Drug Rehabilitation Center]</strong>, with office address at [Address],
+                  represented herein by [Authorized Representative’s Name & Position], hereinafter referred to as
+                  the “Data Subject”.
+                </p>
+
+                <h3>1. Purpose</h3>
+                <p>
+                  This Agreement governs the collection, processing, storage, and protection of personal and
+                  institutional data of Drug Rehabilitation Centers and their authorized representatives for the
+                  purpose of creating, maintaining, and securing official accounts within the BERM platform.
+                </p>
+
+                <h3>2. Scope of Personal Data Collected</h3>
+                <ul>
+                  <li>Name of the Drug Rehabilitation Center</li>
+                  <li>Official Address and Contact Details</li>
+                  <li>Name of Authorized Representative(s)</li>
+                  <li>Position/Designation</li>
+                  <li>Email Address</li>
+                  <li>Mobile/Telephone Number</li>
+                  <li>Account Credentials (username, encrypted password)</li>
+                  <li>Other information required for secure access and compliance</li>
+                </ul>
+
+                <h3>3. Data Collection and Processing</h3>
+                <ul>
+                  <li>Collect only necessary data for the stated purposes;</li>
+                  <li>Process data in compliance with the Data Privacy Act of 2012 (RA 10173);</li>
+                  <li>Use data solely for account management, secure access, communication, and compliance;</li>
+                  <li>Obtain consent prior to processing for purposes beyond those stated herein.</li>
+                </ul>
+
+                <h3>4. Data Sharing and Disclosure</h3>
+                <p>
+                  The Data Controller shall not share any data with third parties unless required by law,
+                  necessary for technical support/security services, or with prior written consent.
+                </p>
+
+                <h3>5. Data Protection Measures</h3>
+                <ul>
+                  <li>End-to-end encryption of sensitive data</li>
+                  <li>Secure authentication protocols</li>
+                  <li>Regular system security audits</li>
+                  <li>Role-based access control</li>
+                  <li>Blockchain-based integrity verification</li>
+                </ul>
+
+                <h3>6. Data Retention and Disposal</h3>
+                <p>
+                  Data shall be retained only as long as necessary for stated purposes or as required by law,
+                  after which it shall be securely deleted, anonymized, or destroyed.
+                </p>
+
+                <h3>7. Rights of the Data Subject</h3>
+                <ul>
+                  <li>Right to be informed about data processing</li>
+                  <li>Right to access data</li>
+                  <li>Right to request correction of inaccurate data</li>
+                  <li>Right to withdraw consent, subject to obligations</li>
+                  <li>Right to request deletion of data</li>
+                  <li>Right to file a complaint with the NPC</li>
+                </ul>
+
+                <h3>8. Breach Notification</h3>
+                <p>
+                  In the event of a data breach, the Data Controller shall notify the Data Subject and the NPC
+                  within the period prescribed by law, including details of the breach and corrective measures.
+                </p>
+
+                <h3>9. Effectivity and Termination</h3>
+                <p>
+                  This Agreement takes effect upon account creation and remains valid until the account is
+                  deactivated or terminated, subject to applicable laws. By proceeding, you confirm that:
                 </p>
                 <ul>
                   <li>You are the authorized representative of your rehabilitation center.</li>
-                  <li>You will provide truthful, complete, and accurate information.</li>
-                  <li>You are responsible for managing patient data in compliance with the Data Privacy Act of 2012.</li>
+                  <li>You provide truthful and accurate information.</li>
+                  <li>You will manage patient data in compliance with RA 10173.</li>
                   <li>You will not use the platform for illegal, abusive, or misleading practices.</li>
-                  <li>You understand your account may be suspended if you violate terms of use.</li>
+                  <li>Your account may be suspended if you violate terms of use.</li>
                 </ul>
+
                 <p>
-                  Read the full terms and data policy <a href="/rehab-terms" target="_blank">here</a>.
+                  Read the full terms and data policy{" "}
+                  <a href="/rehab-terms" target="_blank" rel="noopener noreferrer">
+                    here
+                  </a>
+                  .
                 </p>
               </div>
               <div className="modal-footer">

@@ -2,11 +2,11 @@ import query from "./Sql";
 
 class InputsController {
    
-    async fetch(params=""){
+    async fetch(rehab_center_id: any){
         try {
             const response = await query.get("show_inputs",{
                 input: {
-                    param: params
+                    rehab_center_id: rehab_center_id
                 }
             });
       
@@ -18,11 +18,12 @@ class InputsController {
         }
     }
 
-     async fetchOptions(input_id: any){
+     async fetchOptions(input_id: any, rehab_center_id: any){
         try {
             const response = await query.get("show_input_options",{
                 input: {
-                    input_id: input_id
+                    input_id: input_id,
+                    rehab_center_id:rehab_center_id
                 }
             });
       
@@ -34,20 +35,22 @@ class InputsController {
         }
     }
 
-    async delete_all(ids: any) {
+    async delete_all(ids: any, rehab_center_id: any) {
         const data = await query.post("delete_inputs", {
             input: {
-                ids: ids
+                ids: ids,
+                rehab_center_id:rehab_center_id
             }
         })
 
         return data.data
     }
     
-    async delete_option(id: any) {
+    async delete_option(id: any, rehab_center_id: any) {
         const data = await query.post("delete_input_options", {
             input: {
-                id: id
+                id: id,
+                rehab_center_id:rehab_center_id
             }
         })
 

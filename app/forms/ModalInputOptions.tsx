@@ -11,9 +11,10 @@ interface ModalInputOptionsProps {
   setShow: (show: boolean) => void;
   input_id: number | null;
   fetchInputs: Function;
+  rehab_center_id: any
 }
 
-const ModalInputOptions: React.FC<ModalInputOptionsProps> = ({ show, setShow, input_id, fetchInputs }) => {
+const ModalInputOptions: React.FC<ModalInputOptionsProps> = ({ show, setShow, input_id, fetchInputs, rehab_center_id }) => {
   const [optionsList, setOptionsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newOption, setNewOption] = useState('');
@@ -23,7 +24,7 @@ const ModalInputOptions: React.FC<ModalInputOptionsProps> = ({ show, setShow, in
   const fetchOptions = async () => {
     setLoading(true);
     try {
-      const response = await inputsController.fetchOptions(input_id);
+      const response = await inputsController.fetchOptions(input_id, rehab_center_id);
       setOptionsList(response.data || []);
     } catch (error) {
       console.error('Failed to fetch options:', error);
@@ -39,7 +40,7 @@ const ModalInputOptions: React.FC<ModalInputOptionsProps> = ({ show, setShow, in
   const handleAdd = async () => {
     if (!newOption.trim()) return;
     try {
-      const response = await inputsController.add_option({ input_id, input_option_label: newOption });
+      const response = await inputsController.add_option({ input_id, input_option_label: newOption, rehab_center_id });
       if (response === 1) {
         alerts.success_add();
         setNewOption('');
@@ -60,8 +61,8 @@ const ModalInputOptions: React.FC<ModalInputOptionsProps> = ({ show, setShow, in
       .then(async (result: any) => {
         if (result.isConfirmed) {
           try {
-            const response = await inputsController.delete_option(option_id);
-            if (response === 1) {
+            const response = await inputsController.delete_option(option_id, rehab_center_id);
+            if (response == 1) {
               alerts.success_delete();
               fetchOptions();
             } else {
@@ -80,7 +81,8 @@ const ModalInputOptions: React.FC<ModalInputOptionsProps> = ({ show, setShow, in
     try {
       const response = await inputsController.update_option({
         input_option_id: option_id,
-        input_option_label: editingValue
+        input_option_label: editingValue,
+        rehab_center_id
       });
       if (response === 1) {
         alerts.success_update();

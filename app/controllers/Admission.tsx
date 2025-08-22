@@ -36,10 +36,11 @@ class AdmissionController {
         return data.data
     }
 
-    async total_admission(){
+    async total_admission(rehab_center_id: any){
         try {
             const response  = query.get("total_admission",{
                 input: {
+                    rehab_center_id:rehab_center_id
                 }
             });
       

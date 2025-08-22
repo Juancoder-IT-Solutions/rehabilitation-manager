@@ -9,8 +9,12 @@ import { Spinner, Button } from 'react-bootstrap';
 import globals from '../controllers/Globals';
 import ModalGallery from './modalGallery';
 import { wrap } from 'module';
+import { useSession } from 'next-auth/react';
+import alerts from '../components/Alerts';
 
 const ServicesPage = () => {
+  const { data: session, status } = useSession()
+  const rehab_center_id = session?.user?.rehab_center_id;
   const [listServices, setListServices] = useState([]);
   const [selectedRows, setSelectedRows] = useState<any>([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +29,7 @@ const ServicesPage = () => {
 
   const fetchEntry = async () => {
     try {
-      const response = await galleryController.fetch();
+      const response = await galleryController.fetch(rehab_center_id);
       setListServices(response.data);
     } catch (error) {
       console.error('Failed to fetch entry:', error);
@@ -37,7 +41,7 @@ const ServicesPage = () => {
   const columns = [
     {
       name: 'Actions',
-      cell: (row:any) => (
+      cell: (row: any) => (
         <div className="btn-list flex-nowrap">
           <a href="#" onClick={() => handleUpdate(row)} className="btn btn-primary">
             <FaPencilAlt />
@@ -45,10 +49,10 @@ const ServicesPage = () => {
         </div>
       ),
     },
-    { name: '#', selector: (row:any) => row.count, sortable: true, wrap: true },
+    { name: '#', selector: (row: any) => row.count, sortable: true, wrap: true },
     {
       name: 'Image',
-      cell: (row:any) => (
+      cell: (row: any) => (
         <img
           src={row.file_b64 ? `data:image/jpeg;base64,${row.file_b64}` : no_image}
           alt="Image"
@@ -60,11 +64,11 @@ const ServicesPage = () => {
     },
     {
       name: 'Date Last Modified',
-      selector: (row:any) => row.date_added, // Fix to show the correct date
+      selector: (row: any) => row.date_added, // Fix to show the correct date
       sortable: true, wrap: true
     }
   ];
-  
+
 
   const handleUpdate = (row: any) => {
     setFormData(row);
@@ -79,32 +83,56 @@ const ServicesPage = () => {
     )
   );
 
+
   useEffect(() => {
-    fetchEntry();
-  }, []);
+    if (rehab_center_id) {
+      fetchEntry();
+    }
+  }, [session]);
+
+  // const handleDelete = () => {
+  //   if (selectedRows.length === 0) {
+  //     alert('Please select at least one entry to delete.');
+  //     return;
+  //   }
+
+  //   if (window.confirm(`Are you sure you want to delete ${selectedRows.length} selected entries?`)) {
+  //     console.log('Delete these rows: ', selectedRows.map((row: any) => row.id));
+  //     // Add delete logic here
+  //     deleteEntry(selectedRows.map((row: any) => row.id));
+  //   }
+  // };
 
   const handleDelete = () => {
     if (selectedRows.length === 0) {
-      alert('Please select at least one entry to delete.');
+      alerts.warning('Please select at least one entry to delete.');
       return;
     }
 
-    if (window.confirm(`Are you sure you want to delete ${selectedRows.length} selected entries?`)) {
-      console.log('Delete these rows: ', selectedRows.map((row: any) => row.id));
-      // Add delete logic here
-      deleteEntry(selectedRows.map((row: any) => row.id));
-    }
+    alerts.confirm_action(
+      "Are you sure you want to delete selected entries?",
+      "Yes, delete it",
+      "No, cancel"
+    ).then((result: any) => {
+      if (result.isConfirmed) {
+        deleteEntry(selectedRows.map((row: any) => row.id));
+      } else {
+        alerts.confirm_action_cancel();
+      }
+    });
   };
+
 
   const deleteEntry = async (selectedRows: any) => {
     console.log("select ", selectedRows);
     // setLoading(true);
     try {
-      const response = await galleryController.delete_all(selectedRows);
+      const response = await galleryController.delete_all(selectedRows, rehab_center_id);
       if (response <= 0) {
-        alert('Failed to delete selected entries.');
+        // alert('Failed to delete selected entries.');
+        alerts.failed_query();
       } else {
-        alert('Successfully deleted selected entries.');
+        alerts.success_delete();
         fetchEntry();
       }
     } catch (error) {
@@ -181,7 +209,7 @@ const ServicesPage = () => {
       </div>
       <Footer />
 
-      <ModalGallery showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchEntry={fetchEntry} submit_type={submit_type} />
+      <ModalGallery showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} fetchEntry={fetchEntry} submit_type={submit_type} rehab_center_id={rehab_center_id} />
     </div>
   );
 };
