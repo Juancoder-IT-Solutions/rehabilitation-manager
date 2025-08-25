@@ -68,13 +68,13 @@ const ServicesPage = () => {
             className="btn btn-primary"
             onClick={() => handleUpdate(row)}
           >
-            <LuPencil size={14} /> Edit
+            <LuPencil size={14} />&nbsp; Edit
           </button>
           <button
             className="btn btn-secondary"
             onClick={() => showStages(row.service_id)}
           >
-            <FaTasks size={14} /> Stages
+            <FaTasks size={14} />&nbsp; Stages
           </button>
         </div>
       )
@@ -125,7 +125,7 @@ const ServicesPage = () => {
     console.log("select ", selectedRows);
     // setLoading(true);
     try {
-      const response = await servicesController.delete_all(selectedRows);
+      const response = await servicesController.delete_all(selectedRows, rehab_center_id);
       if (response <= 0) {
         alerts.warning('Failed to delete selected entries.');
       } else {
