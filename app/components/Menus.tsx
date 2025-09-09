@@ -1,6 +1,6 @@
 'use client'
 import Link from "next/link"
-import { LuBookCheck, LuBookImage, LuBookOpen, LuBookUser, LuFile, LuFileArchive, LuFileText, LuHouse } from "react-icons/lu"
+import { LuBookCheck, LuBookImage, LuBookOpen, LuBookUser, LuFile, LuFileArchive, LuFileText, LuHouse, LuNotebookText } from "react-icons/lu"
 
 const Menus = () => {
     return (
@@ -55,6 +55,16 @@ const Menus = () => {
                                     </span>
                                     <span className="nav-link-title">
                                         Gallery
+                                    </span>
+                                </a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="/rehab-gallery">
+                                    <span className="nav-link-icon d-md-none d-lg-inline-block">
+                                        <LuNotebookText size={24} />
+                                    </span>
+                                    <span className="nav-link-title">
+                                        Smart Contract
                                     </span>
                                 </a>
                             </li>
