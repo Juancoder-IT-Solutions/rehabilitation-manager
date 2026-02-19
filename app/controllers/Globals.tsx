@@ -9,7 +9,8 @@ class Globals {
     public rehab_center_id = 1 //localStorage.getItem("rm_rehab_center_id")
     // public user_token = localStorage.getItem("rm_user_token")
     // public user_category = localStorage.getItem("rm_user_category")
-    public host = "http://localhost/rehabilitation-manager-be"
+    // public host = "http://localhost/rehabilitation-manager-be"
+    public host = "https://rehabmanager.org/rehabilitation-manager-be"
     public api = `${this.host}/api/api.php?authUserId=${this.user_id}&authRehabCenterId=${this.rehab_center_id}&action=`;
 
 
