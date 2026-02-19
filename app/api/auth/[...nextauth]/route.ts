@@ -1,66 +1,66 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const authOptions: NextAuthOptions = {
-    providers: [
-        CredentialsProvider({
-            name: 'credentials',
-            credentials: {
-                id: {label: "Id", type: "text"},
-                role: {label: "role", type: "text"},
-                rehab_center_id: {label: "rehab_center_id", type: "text"},
-                username: {label: "Username", type: "text"},
-                password: { label: "Password", type: "password"}
-            },
-            async authorize(credentials){
-                const { username, password } = credentials ?? {};
-                const user = {
-                    id: `${credentials?.id}`,
-                    role: `${credentials?.role}`,
-                    rehab_center_id: `${credentials?.rehab_center_id}`,
-                    name: credentials?.username,
-                    username: credentials?.username
-                }
+const handler = NextAuth({
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        id: { label: "ID", type: "text" },
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+        role: { label: "Role", type: "text" },
+        rehab_center_id: { label: "Rehab Center ID", type: "text" },
+      },
 
-                if(username && password){
-                    return user
-                }
+      async authorize(credentials) {
+        try {
+          if (!credentials?.id || !credentials?.username) {
+            return null;
+          }
 
-                return null
-            }
-        })
-    ],
-    session: {
-        strategy: "jwt"
-    },
-    jwt: {
-        secret: process.env.NEXTAUTH_SECRET,
-    },
-    secret: process.env.NEXTAUTH_SECRET,
-    pages: {
-        signIn: "/login",
-        error: "/login"
-    },
-    callbacks: {
-        async jwt({token, user}) {
-            if(user){
-                token.id = user.id
-                token.role = user.role
-                token.rehab_center_id = user.rehab_center_id
-            }
-            return token
-        },
-        async session({ session, token }) {
-            // Add id from token to session.user
-            if (session.user) {
-                session.user.id = token.id as string
-                session.user.role = token.role as string
-                session.user.rehab_center_id = token.rehab_center_id as string
-            }
-            return session;
-        },
-    }
-}
+          // You already validated the user in users.login()
+          return {
+            id: credentials.id,
+            name: credentials.username,
+            role: credentials.role,
+            rehab_center_id: credentials.rehab_center_id,
+          };
+        } catch (e) {
+          console.error("Authorize error:", e);
+          return null;
+        }
+      },
+    }),
+  ],
 
-const handler = NextAuth(authOptions)
-export {handler as GET, handler as POST}
+  session: {
+    strategy: "jwt",
+  },
+
+  pages: {
+    signIn: "/login",
+  },
+
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = (user as any).role;
+        token.rehab_center_id = (user as any).rehab_center_id;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      session.user.id = token.id as string;
+      (session.user as any).role = token.role;
+      (session.user as any).rehab_center_id = token.rehab_center_id;
+      return session;
+    },
+  },
+
+  secret: process.env.NEXTAUTH_SECRET,
+});
+
+export { handler as GET, handler as POST };

@@ -2,15 +2,16 @@ import globals from "./Globals";
 import query from "./Sql";
 
 class AdmissionController {
-    
-    async fetch(){
+
+    async fetch(rehab_center_id: any) {
         try {
-            const response  = query.get("show_admissions",{
+            const response = query.get("show_admissions", {
                 input: {
+                    rehab_center_id:rehab_center_id
                 }
             });
-      
-            console.log("fetching",response)
+
+            console.log("fetching", response)
             return response
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -36,21 +37,51 @@ class AdmissionController {
         return data.data
     }
 
-    async total_admission(rehab_center_id: any){
+    async total_admission(rehab_center_id: any) {
         try {
-            const response  = query.get("total_admission",{
+            const response = await query.get("total_admission", {
                 input: {
-                    rehab_center_id:rehab_center_id
+                    rehab_center_id: rehab_center_id
                 }
             });
-      
-            console.log("fetching",response)
+
+            console.log("fetching", response)
             return response
         } catch (error) {
             console.error('Error fetching data:', error);
             return error
         }
     }
+
+    async getInputs(rehab_center_id: any) {
+        try {
+            const response = await query.get("show_admission_inputs", {
+                input: {
+                    rehab_center_id: rehab_center_id
+                }
+            });
+
+            console.log("fetching", response);
+            return response
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            throw error;
+        }
+    }
+
+    async getDetails(rehab_center_id: any, admission_id: number) {
+        try {
+            const response = await query.get("get_details_inputs", {
+                input: { rehab_center_id, admission_id }
+            });
+            return response?.data ?? response;
+        } catch (error) {
+            console.error("Error fetching details:", error);
+            throw error;
+        }
+    }
+
+
 
 }
 

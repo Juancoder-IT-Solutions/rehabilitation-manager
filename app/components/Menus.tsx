@@ -1,15 +1,21 @@
 'use client'
 import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { ImProfile } from "react-icons/im"
 import { LuBookCheck, LuBookImage, LuBookOpen, LuBookUser, LuFile, LuFileArchive, LuFileText, LuHouse, LuNotebookText } from "react-icons/lu"
 
 const Menus = () => {
+    
+    const pathname = usePathname()
+    const isActive = (path: string) => pathname === path
+    
     return (
         <header className="navbar-expand-md">
             <div className="collapse navbar-collapse" id="navbar-menu">
                 <div className="navbar">
                     <div className="container-xl">
                         <ul className="navbar-nav">
-                            <li className="nav-item active">
+                            <li className={isActive("/") ? "nav-item active" : "nav-item"}>
                                 <Link className="nav-link" href="/" >
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                                         <LuHouse size={24} />
@@ -17,7 +23,7 @@ const Menus = () => {
                                     <span className="nav-link-title">Home</span>
                                 </Link>
                             </li>
-                            <li className="nav-item">
+                            <li className={isActive("/admission") ? "nav-item active" : "nav-item"}>
                                 <a className="nav-link" href="/admission">
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                                         <LuBookUser size={24} />
@@ -28,7 +34,7 @@ const Menus = () => {
                                 </a>
                             </li>
                             
-                            <li className="nav-item">
+                            <li className={isActive("/forms") ? "nav-item active" : "nav-item"}>
                                 <a className="nav-link" href="/forms">
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                                         <LuFileText size={24} />
@@ -38,7 +44,7 @@ const Menus = () => {
                                     </span>
                                 </a>
                             </li>
-                            <li className="nav-item">
+                            <li className={isActive("/services") ? "nav-item active" : "nav-item"}>
                                 <a className="nav-link" href="/services">
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                                         <LuBookOpen size={24} />
@@ -48,7 +54,7 @@ const Menus = () => {
                                     </span>
                                 </a>
                             </li>
-                            <li className="nav-item">
+                            <li className={isActive("/gallery") ? "nav-item active" : "nav-item"}>
                                 <a className="nav-link" href="/rehab-gallery">
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                                         <LuBookImage size={24} />
@@ -58,7 +64,17 @@ const Menus = () => {
                                     </span>
                                 </a>
                             </li>
-                            <li className="nav-item">
+                            <li className={isActive("/clientprofile") ? "nav-item active" : "nav-item"}>
+                                <a className="nav-link" href="/clientprofile">
+                                    <span className="nav-link-icon d-md-none d-lg-inline-block">
+                                        <ImProfile size={24} />
+                                    </span>
+                                    <span className="nav-link-title">
+                                        Client Profile
+                                    </span>
+                                </a>
+                            </li>
+                            {/* <li className="nav-item">
                                 <a className="nav-link" href="/rehab-gallery">
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                                         <LuNotebookText size={24} />
@@ -67,7 +83,7 @@ const Menus = () => {
                                         Smart Contract
                                     </span>
                                 </a>
-                            </li>
+                            </li> */}
                             {/* <li className="nav-item dropdown">
                                 <Link href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                                     <span className="nav-link-icon d-md-none d-lg-inline-block">
