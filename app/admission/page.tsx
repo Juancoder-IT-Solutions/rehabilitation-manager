@@ -1,122 +1,169 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FaCheck, FaPencilAlt, FaPlus, FaTimes, FaTrashAlt } from 'react-icons/fa';
+import { FaCheck, FaPencilAlt, FaTimes } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import admissionController from '../controllers/Admission';
 import DataTable from 'react-data-table-component';
-import { Spinner, FormControl, InputGroup, Button } from 'react-bootstrap';
-import ModalAdmision from './modalAdmission';
-import globals from '../controllers/Globals';
+import { Spinner, Button } from 'react-bootstrap';
+import ModalAdmission from './modalAdmission';
+import { useSession } from "next-auth/react";
 
 const AdmissionPage = () => {
-  const [listServices, setListServices] = useState([]);
-  const [selectedRows, setSelectedRows] = useState<any>([]);
+  const { data: session, status } = useSession()
+  const rehab_center_id = session?.user?.rehab_center_id;
+
+  const [listServices, setListServices] = useState<any[]>([]);
+  const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterText, setFilterText] = useState('');
-  const [form_data, setFormData] = useState({});
-  const [submit_type, setSubmitType] = useState('add');
-
+  const [form_data, setFormData] = useState<any>({});
+  const [submit_type, setSubmitType] = useState<'add' | 'update'>('add');
   const [showModal, setShowModal] = useState(false);
+  const [inputs, setInputs] = useState<any[]>([]);
+
 
   const fetchEntry = async () => {
+    setLoading(true);
     try {
-      const response = await admissionController.fetch();
-      setListServices(response.data);
+      const response = await admissionController.fetch(rehab_center_id);
+      setListServices(response?.data || []);
     } catch (error) {
-      console.error('Failed to fetch services:', error);
+      console.error('Failed to fetch admission:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const columns = [
-    { name: '#', selector: (row: any) => row.count, sortable: true },
-    { name: 'Name', selector: (row: any) => row.user, sortable: true },
-    { name: 'Service', selector: (row: any) => globals.formatNumber(row.service), sortable: true },
-    { name: 'Admitting Physician', selector: (row: any) => row.admitting_physician, sortable: true },
-    { name: 'Date Last Modified', selector: (row: any) => row.date_updated, sortable: true }, {
-      name: 'Actions',
-      cell: (row: any) => (
-        <div className="btn-list flex-nowrap">
-          <a href="#" onClick={() => handleUpdate(row)} className="btn btn-primary">
-            <FaPencilAlt />
-          </a>
-        </div>
-      )
+  useEffect(() => {
+    if (status === "authenticated" && rehab_center_id) {
+      fetchEntry();
+      fetchInputs();
     }
-  ];
+  }, [status, session]);
 
-  const handleUpdate = (row: any) => {
-    setFormData(row);
-    setShowModal(true);
-    setSubmitType('update');
+  const fetchInputs = async () => {
+    try {
+      const res = await admissionController.getInputs(rehab_center_id);
+      setInputs(res?.data || []);
+    } catch (err) {
+      console.error("Failed to fetch inputs", err);
+    }
+  };
+
+  const handleUpdate = async (row: any) => {
+    try {
+      const details = await admissionController.getDetails(
+        rehab_center_id,
+        row.admission_id
+      );
+
+      const mapped: any = {};
+
+      inputs.forEach((input) => {
+        const found = details.find((d: any) => d.input_id === input.input_id);
+        mapped[input.input_id] = found?.input_value || '';
+      });
+
+      setFormData(mapped);
+      setSubmitType('update');
+      setShowModal(true);
+    } catch (err) {
+      console.error("Failed to load admission details", err);
+      alert("Failed to load admission details.");
+    }
   };
 
 
-  const filteredItems = listServices.filter((item) =>
-    Object.values(item).some((value) =>
+  const columns = [
+    {
+      name: 'Actions',
+      cell: (row: any) => (
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => handleUpdate(row)}
+        >
+          <FaPencilAlt />
+        </button>
+      )
+    },
+    { name: '#', selector: (row: any) => row.count, sortable: true },
+    { name: 'Name', selector: (row: any) => row.user, sortable: true },
+    { name: 'Date Added', selector: (row: any) => row.date_added, sortable: true }
+  ];
+
+  const filteredItems = listServices.filter((item: any) =>
+    Object.values(item || {}).some((value: any) =>
       value?.toString().toLowerCase().includes(filterText.toLowerCase())
     )
   );
 
-  useEffect(() => {
-    // fetchEntry();
-  }, []);
-
   const handleDelete = () => {
-    if (selectedRows.length === 0) {
-      alert('Please select at least one entry to delete.');
+    if (!selectedRows.length) {
+      alert('Please select at least one entry to decline.');
       return;
     }
 
-    if (window.confirm(`Are you sure you want to delete ${selectedRows.length} selected entries?`)) {
-      console.log('Delete these rows: ', selectedRows.map((row: any) => row.service_id));
-      // Add delete logic here
+    if (window.confirm(`Are you sure you want to decline ${selectedRows.length} entries?`)) {
       deleteEntry(selectedRows.map((row: any) => row.service_id));
     }
   };
 
-  const deleteEntry = async (selectedRows: any) => {
-    console.log("select ", selectedRows);
-    // setLoading(true);
+  const deleteEntry = async (ids: number[]) => {
     try {
-      const response = await admissionController.delete_all(selectedRows);
-      if (response <= 0) {
-        alert('Failed to delete selected entries.');
+      const response = await admissionController.delete_all(ids);
+      if (!response || response <= 0) {
+        alert('Failed to decline selected entries.');
       } else {
-        alert('Successfully deleted selected entries.');
+        alert('Successfully declined selected entries.');
         fetchEntry();
       }
     } catch (error) {
-      console.error('Failed to fetch services:', error);
-    } finally {
-      // setLoading(false);
+      console.error('Delete failed:', error);
     }
-  }
+  };
 
-  const addModal = () => {
-    setShowModal(true);
-    setSubmitType('add');
-    setFormData([]);
-  }
+  // const addModal = () => {
+  //   setSubmitType('add');
+  //   setFormData({});
+  //   setShowModal(true);
+  // };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await admissionController.update(form_data);
+      alert('Admission updated successfully!');
+
+      setShowModal(false);
+      fetchEntry();
+    } catch (error) {
+      console.error('Submit failed:', error);
+      alert('Failed to save admission record.');
+    }
+  };
+
 
   return (
-    <div className='page-wrapper bg-light min-vh-100'>
-      <div className='page-header d-print-none'>
-        <div className='container-xl'>
-          <div className='row g-2 align-items-center'>
-            <div className='col'>
-              <div className='page-pretitle'>Manage Admission</div>
-              <h2 className='page-title'>Admission</h2>
+    <div className="page-wrapper bg-light min-vh-100">
+      <div className="page-header d-print-none">
+        <div className="container-xl">
+          <div className="row g-2 align-items-center">
+            <div className="col">
+              <div className="page-pretitle">Manage Admission</div>
+              <h2 className="page-title">Admission</h2>
             </div>
-            <div className='col-auto ms-auto d-print-none'>
-              <div className='btn-list'>
-                <Button variant='primary' onClick={addModal}>
-                  <FaCheck /> &nbsp; Approved
+
+            <div className="col-auto ms-auto d-print-none">
+              <div className="btn-list">
+                <Button variant="primary">
+                  <FaCheck /> &nbsp; Approve
                 </Button>
-                <Button variant='warning' onClick={handleDelete}>
-                  <FaTimes />&nbsp; Declined
+
+                <Button variant="warning" onClick={handleDelete}>
+                  <FaTimes /> &nbsp; Decline
                 </Button>
               </div>
             </div>
@@ -124,18 +171,19 @@ const AdmissionPage = () => {
         </div>
       </div>
 
-      <div className='page-body'>
-        <div className='container-xl'>
-          <div className='card shadow-sm'>
-            <div className='card-body'>
-              <div className='d-flex justify-content-between mb-3'>
-                <div></div>
-                <div className="input-icon mb-3">
-                  <input type="text" className="form-control" placeholder="Search…" value={filterText} onChange={(e) => setFilterText(e.target.value)} />
-                  <span className="input-icon-addon">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
-                  </span>
-                </div>
+      <div className="page-body">
+        <div className="container-xl">
+          <div className="card shadow-sm">
+            <div className="card-body">
+
+              <div className="d-flex justify-content-end mb-3">
+                <input
+                  type="text"
+                  className="form-control w-25"
+                  placeholder="Search…"
+                  value={filterText}
+                  onChange={(e) => setFilterText(e.target.value)}
+                />
               </div>
 
               <DataTable
@@ -145,23 +193,29 @@ const AdmissionPage = () => {
                 onSelectedRowsChange={({ selectedRows }) => setSelectedRows(selectedRows)}
                 pagination
                 highlightOnHover
-                paginationPerPage={10}
-                paginationRowsPerPageOptions={[10, 25, 50]}
                 selectableRowsHighlight
                 progressPending={loading}
                 progressComponent={
-                  <div className='text-center my-4'>
-                    <Spinner animation='border' variant='primary' />
-                    <p className='mt-2'>Loading, please wait...</p>
+                  <div className="text-center my-4">
+                    <Spinner animation="border" />
+                    <p className="mt-2">Loading, please wait...</p>
                   </div>
                 }
               />
+
             </div>
           </div>
         </div>
       </div>
 
-      <ModalAdmision showModal={showModal} setShowModal={setShowModal} form_data={form_data} setFormData={setFormData} handleSubmit={submit_type} />
+      <ModalAdmission
+        showModal={showModal}
+        setShowModal={setShowModal}
+        form_data={form_data}
+        setFormData={setFormData}
+        handleSubmit={handleSubmit}
+        inputs={inputs}
+      />
 
       <Footer />
     </div>

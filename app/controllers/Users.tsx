@@ -2,11 +2,12 @@ import query from "./Sql";
 
 class Users {
    
-    async fetch(params=""){
+    async fetch(params="", rehab_center_id = ''){
         try {
-            const response = await query.get("show_users",{
+            const response = await query.get("show_user",{
                 input: {
-                    param: params
+                    param: params,
+                    rehab_center_id:rehab_center_id
                 }
             });
       

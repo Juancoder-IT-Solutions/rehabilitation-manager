@@ -20,32 +20,36 @@ const Login = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const user = await users.login(form_data);
-    const username = form_data.username
-    const password = form_data.password
+    const resUser = await users.login(form_data);
+
+    if (!resUser || !resUser) {
+      alerts.warning("Please try again. The server is still processing your request. You can refresh or try again.");
+      return;
+    }
+
+    const user = resUser;
+    console.log("user.user_id", user.user_id);
+
     if (user.user_id > 0) {
       const res = await signIn('credentials', {
         redirect: false,
         id: user.user_id,
         role: user.user_category,
         rehab_center_id: user.rehab_center_id,
-        username,
-        password
-      })
+        username: form_data.username,
+        password: form_data.password,
+      });
 
       if (res?.error) {
-        alerts.error('Invalid credentials! Please check your username and password.')
-        return
-      } else {
-        redirect("/")
+        alerts.error("Invalid credentials. Please try again.");
+        return;
       }
 
-
-    } else if (user === -1 || user === -2) {
-      alerts.error('Invalid credentials! Please check your username and password.')
+      redirect("/");
     } else {
-      alerts.warning()
+      alerts.error("Invalid credentials. Please try again.");
     }
+
   };
 
   useEffect(() => {
@@ -131,7 +135,7 @@ const Login = () => {
             </div>
 
             <div className="form-footer mt-3">
-              <button type="submit" className="btn btn-success w-100">
+              <button type="submit" className="btn btn-primary w-100">
                 Sign in
               </button>
             </div>
@@ -149,7 +153,7 @@ const Login = () => {
       {/* AGREEMENT MODAL FOR REHAB CENTER ACCOUNT CREATION */}
       {showAgreement && (
         <div className="modal fade show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-          <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-dialog modal-xl modal-dialog-centered">
             <div className="modal-content shadow-lg border-0">
               <div className="modal-header">
                 <h5 className="modal-title">Rehab Center Owner Agreement</h5>
