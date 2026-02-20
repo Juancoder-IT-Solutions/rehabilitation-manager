@@ -119,6 +119,19 @@ class ServicesController {
         return data.data;
     }
 
+    
+    async add_service_admission(service_id: any, admission_id: any, rehab_center_id: any) {
+        const data = await query.post("add_service_admission", {
+            input: {
+                service_id:service_id,
+                admission_id:admission_id,
+                rehab_center_id:rehab_center_id
+            }
+        })
+
+        return data.data;
+    }
+
     async update_task(form_data: any) {
         const data = await query.post("update_service_stages_task", {
             input: form_data

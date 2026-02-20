@@ -150,7 +150,8 @@ const ModalStages: React.FC<ComponentProps> = ({
             task_name: taskName,
             task_desc: taskDesc,
             stage_id: selectedStage.stage_id,
-            rehab_center_id: rehab_center_id
+            rehab_center_id: rehab_center_id,
+            service_id: serviceID
         };
 
         const response = await servicesController.add_task(formdata);
