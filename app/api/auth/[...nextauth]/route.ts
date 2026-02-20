@@ -21,6 +21,16 @@ export const authOptions: NextAuthOptions = {
         const role = credentials.role as string;
         const rehab_center_id = credentials.rehab_center_id as string;
 
+        const user = {
+            id: `${credentials?.id}`,
+            name: `${credentials?.username}`,
+            rehab_center_id: `${credentials?.rehab_center_id}`,
+        }
+
+        if (username) {
+            return user
+        }
+
         if (!id || !username) return null;
 
         // You already validated user from your PHP backend
