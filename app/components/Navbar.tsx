@@ -35,8 +35,8 @@ const Navbar = () => {
                             <Link href="#" className="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
                                 <span className="avatar avatar-sm">{<FaUser />}</span>
                                 <div className="d-none d-xl-block ps-2">
-                                    <div>{session?.user.name}</div>
-                                    <div className="mt-1 small text-muted">{session?.user.role}</div>
+                                    {/* <div>{session?.user.name}</div> */}
+                                    {/* <div className="mt-1 small text-muted">{session?.user.role}</div> */}
                                 </div>
                             </Link>
                             <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
