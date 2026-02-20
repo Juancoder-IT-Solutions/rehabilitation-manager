@@ -1,6 +1,7 @@
 'use client'
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { BiCalendarEvent } from "react-icons/bi"
 import { ImProfile } from "react-icons/im"
 import { LuBookCheck, LuBookImage, LuBookOpen, LuBookUser, LuFile, LuFileArchive, LuFileText, LuHouse, LuNotebookText } from "react-icons/lu"
 
@@ -30,6 +31,16 @@ const Menus = () => {
                                     </span>
                                     <span className="nav-link-title">
                                         Admission
+                                    </span>
+                                </a>
+                            </li>
+                            <li className={isActive("/appointments") ? "nav-item active" : "nav-item"}>
+                                <a className="nav-link" href="/appointments">
+                                    <span className="nav-link-icon d-md-none d-lg-inline-block">
+                                        <BiCalendarEvent size={24} />
+                                    </span>
+                                    <span className="nav-link-title">
+                                        Appointments
                                     </span>
                                 </a>
                             </li>

@@ -88,7 +88,6 @@ export default function GoogleMapComponent({
         type="text"
         className="form-control mt-2"
         value={coordinates}
-        readOnly
       />
     </>
   );
