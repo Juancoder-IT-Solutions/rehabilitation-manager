@@ -1,83 +1,65 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-export const authOptions: NextAuthOptions = {
-  providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        id: { label: "ID", type: "text" },
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" },
-        role: { label: "Role", type: "text" },
-        rehab_center_id: { label: "Rehab Center ID", type: "text" },
-      },
+const authOptions: NextAuthOptions = {
+    providers: [
+        CredentialsProvider({
+            name: 'credentials',
+            credentials: {
+                id: { label: "Id", type: "text" },
+                rehab_center_id: { label: "rehab_center_id" },
+                roles: { label: "Roles" },
+                username: { label: "Username", type: "text" },
+                password: { label: "Password", type: "password" }
+            },
+            async authorize(credentials) {
+                const { username, password } = credentials ?? {};
+                const user = {
+                    id: `${credentials?.id}`,
+                    rehab_center_id: `${credentials?.rehab_center_id}`,
+                    roles: `${credentials?.roles}`,
+                    name: credentials?.username,
+                    username: credentials?.username
+                }
 
-      async authorize(credentials, req) {
-        if (!credentials) return null;
+                if (username && password) {
+                    return user
+                }
 
-        const id = credentials.id as string;
-        const username = credentials.username as string;
-        const role = credentials.role as string;
-        const rehab_center_id = credentials.rehab_center_id as string;
-
-        const user = {
-            id: `${credentials?.id}`,
-            name: `${credentials?.username}`,
-            rehab_center_id: `${credentials?.rehab_center_id}`,
-        }
-
-        if (username) {
-            return user
-        }
-
-        if (!id || !username) return null;
-
-        // You already validated user from your PHP backend
-        return {
-          id: String(id),
-          name: String(username),
-          role: String(role),
-          rehab_center_id: String(rehab_center_id),
-        };
-      },
-    }),
-  ],
-
-  session: {
-    strategy: "jwt",
-  },
-
-  pages: {
-    signIn: "/login",
-  },
-
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.rehab_center_id = user.rehab_center_id;
-      }
-      return token;
+                return null
+            }
+        })
+    ],
+    session: {
+        strategy: "jwt"
     },
-
-    async session({ session, token }) {
-       if (token.id) {
-        let session_user: any = session.user
-          if (session_user.user) {
-            session_user.user.id = token.id!;
-            session_user.user.role = token.role;
-            session_user.user.rehab_center_id = token.rehab_center_id;
-          }
-          return session_user;
-        }
+    jwt: {
+        secret: process.env.NEXTAUTH_SECRET,
     },
-  },
+    secret: process.env.NEXTAUTH_SECRET,
+    pages: {
+        signIn: "/login",
+        error: "/login"
+    },
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id
+                token.rehab_center_id = user.rehab_center_id
+            }
+            return token
+        },
+        async session({ session, token }) {
+            // Add id from token to session.user
+            if (token.id) {
+                let session_user: any = session.user
+                session_user.id = token.id;
+                session_user.rehab_center_id = token.rehab_center_id;
+            }
+            return session;
+        },
+    }
+}
 
-  secret: process.env.NEXTAUTH_SECRET,
-};
-
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST };
+const handler = NextAuth(authOptions)
+export { handler as GET, handler as POST }
