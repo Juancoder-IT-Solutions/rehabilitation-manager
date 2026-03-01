@@ -18,6 +18,17 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
 
+  const [showForgot, setShowForgot] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [serverOtp, setServerOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const resUser = await users.login(form_data);
@@ -140,6 +151,12 @@ const Login = () => {
               </button>
             </div>
           </form>
+          <div className="text-end mt-2">
+            <a href="#" onClick={(e) => { e.preventDefault(); setShowForgot(true); }}>
+              Forgot password?
+            </a>
+          </div>
+
 
           <div className="text-center text-muted mt-4">
             Don’t have a rehab center account?{' '}
@@ -272,6 +289,140 @@ const Login = () => {
                 <button className="btn btn-primary" onClick={() => router.push('/register-rehab-center')}>
                   I Agree & Continue
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showForgot && (
+        <div className="modal fade show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Reset Password</h5>
+                <button className="btn-close" onClick={() => {
+                  setShowForgot(false);
+                  setOtpSent(false);
+                }} />
+              </div>
+
+              <div className="modal-body">
+                {!otpSent && (
+                  <>
+                    <label className="form-label">Username</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="username"
+                      value={form_data.username || ''}
+                      onChange={handleChange}
+                    />
+
+                    <button
+                      className="btn btn-primary w-100 mt-3"
+                      disabled={isSendingOtp}
+                      onClick={async () => {
+                        if (isSendingOtp) return;
+                        setIsSendingOtp(true);
+
+                        try {
+                          const res = await users.sendOtp(form_data.username, form_data.email);
+
+                          if (res == 0) {
+                            alerts.error("Failed to send OTP.");
+                            return;
+                          } else if (res == -1) {
+                            alerts.error("User not found. Please check your username and email.");
+                            return;
+                          }
+
+                          setServerOtp(res.otp);
+                          setOtpSent(true);
+                          alerts.success_update("OTP sent to your email.");
+                        } finally {
+                          setIsSendingOtp(false);
+                        }
+                      }}
+                    >
+                      {isSendingOtp ? 'Sending OTP…' : 'Send OTP'}
+                    </button>
+                  </>
+                )}
+
+                {otpSent && (
+                  <>
+                    <label className="form-label">Enter OTP</label>
+                    <input
+                      type="text"
+                      className="form-control mb-2"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                    />
+
+                    <label className="form-label">New Password</label>
+                    <input
+                      type="password"
+                      className="form-control mb-2"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+
+                    <label className="form-label">Confirm Password</label>
+                    <input
+                      type="password"
+                      className="form-control mb-3"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+
+                    <button
+                      className="btn btn-success w-100"
+                      disabled={isResetting}
+                      onClick={async () => {
+                        if (isResetting) return;
+
+                        // if (otp !== serverOtp) {
+                        //   alerts.error("OTP does not match.");
+                        //   return;
+                        // }
+
+                        if (newPassword !== confirmPassword) {
+                          alerts.error("Passwords do not match.");
+                          return;
+                        }
+
+                        setIsResetting(true);
+
+                        try {
+                          const res = await users.resetPassword(newPassword, form_data.username, otp);
+
+                          if (res == 0) {
+                            alerts.error("Failed to reset password.");
+                            return;
+                          }else if (res == -2) {
+                            alerts.error("Invalid OTP. Please check the OTP sent to your email.");
+                            return;
+                          }else if (res == -1) {
+                            alerts.error("User not found. Please check your username and email.");
+                            return;
+                          }
+
+                          alerts.success_update("Password updated successfully!");
+                          setShowForgot(false);
+                          setOtpSent(false);
+                          setOtp('');
+                          setNewPassword('');
+                          setConfirmPassword('');
+                        } finally {
+                          setIsResetting(false);
+                        }
+                      }}
+                    >
+                      {isResetting ? 'Updating password…' : 'Change Password'}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

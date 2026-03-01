@@ -119,7 +119,54 @@ export default function RegisterRehabCenter() {
                     ></textarea>
                   </div>
 
-                  <div className="col-md-12">
+                  <hr className="text-info" style={{ border: "2px dashed" }} />
+
+                  <div className="col-md-4">
+                    <label className="form-label">First Name</label>
+                    <input
+                      type="text"
+                      name="user_fname"
+                      className="form-control"
+                      required
+                      value={formData.user_fname || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <label className="form-label">Middle Name</label>
+                    <input
+                      type="text"
+                      name="user_mname"
+                      className="form-control"
+                      value={formData.user_mname || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <label className="form-label">Last Name</label>
+                    <input
+                      type="text"
+                      name="user_lname"
+                      className="form-control"
+                      required
+                      value={formData.user_lname || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                   <div className="col-md-6">
+                    <label className="form-label">Email</label>
+                    <input
+                      type="text"
+                      name="user_email"
+                      className="form-control"
+                      required
+                      value={formData.user_email || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="col-md-6">
                     <label className="form-label">Username</label>
                     <input
                       type="text"

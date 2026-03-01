@@ -344,7 +344,12 @@ const ModalAdmissionRecord: React.FC<Props> = ({
 
                               <div className="d-flex gap-2">
                                 <span className="badge bg-info" title="Tasks">
-                                  <GoTasklist size={18} />
+                                  <GoTasklist size={18}
+                                    onClick={() => {
+                                      setSelectedService(service);
+                                      setShowStagesModal(true);
+                                      fetchStages(service.admission_service_id);
+                                    }} />
                                 </span>
 
                                 {admission_data.status === "A" || admission_data.status === "O" ? (
@@ -459,7 +464,7 @@ const ModalAdmissionRecord: React.FC<Props> = ({
         tasks={tasks}
         admission_id={admission_data.admission_id}
         rehab_center_id={rehab_center_id}
-        reload={getServicesAvail}
+        reload={() => getServicesAvail(admission_data.admission_id)}
         admission_service_id={selectedAdmissionServiceId}
       />
     </>

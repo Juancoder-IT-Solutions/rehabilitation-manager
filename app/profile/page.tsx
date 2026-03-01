@@ -9,6 +9,7 @@ import users from '../controllers/Users'
 const ProfilePage = () => {
   const { data: session, status } = useSession()
   const sessionUser: any = session?.user
+
   const rehab_center_id = sessionUser?.rehab_center_id
   const user_id = sessionUser?.id
 
@@ -26,12 +27,12 @@ const ProfilePage = () => {
     user_category: '',
     username: '',
   })
+
   const [username, setUsername] = useState('')
   const [oldPassword, setOldPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
-  // Fetch user + rehab info on load
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -47,12 +48,22 @@ const ProfilePage = () => {
     if (user_id && rehab_center_id) fetchProfile()
   }, [user_id, rehab_center_id])
 
-  // Update username/profile
+  // Update profile
   const handleProfileSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setSavingProfile(true)
     try {
-      const formData = { user_id, username, rehab_center_id }
+      const formData: any = { user_id, username, user_category: row.user_category }
+
+      if (row.user_category === 'R') {
+        // Include rehab center info
+        formData.rehab_center_id = rehab_center_id
+        formData.rehab_center_name = row.rehab_center_name
+        formData.rehab_center_complete_address = row.rehab_center_complete_address
+        formData.rehab_center_city = row.rehab_center_city
+        formData.hospital_code = row.hospital_code
+      }
+
       const response = await users.update_profile(formData)
       if (response > 0) {
         alerts.success_update('Profile updated successfully.')
@@ -102,57 +113,71 @@ const ProfilePage = () => {
         <div className="container-xl">
           <div className="row gy-4">
 
-            {/* ── Profile Details ─────────────────────────────── */}
+            {/* Profile Details */}
             <div className="col-lg-8">
               <div className="card shadow-sm">
                 <div className="card-header">
-                  <h5 className="m-0 fw-bold text-primary">Profile&nbsp;Details</h5>
+                  <h5 className="m-0 fw-bold text-primary">Profile Details</h5>
                 </div>
                 <div className="card-body">
                   {loadingProfile ? (
                     <div className="d-flex justify-content-center py-5">
-                      <div className="spinner-border text-primary" role="status" />
+                      <div className="spinner-border text-primary" />
                     </div>
                   ) : (
                     <form onSubmit={handleProfileSubmit}>
                       <div className="row g-3">
 
-                        <div className="col-12">
-                          <label className="form-label fw-semibold">Rehab Center</label>
-                          <input
-                            className="form-control"
-                            value={row?.rehab_center_name || ''}
-                            disabled
-                          />
-                        </div>
+                        {/* Rehab center info only for 'R' */}
+                        {row?.user_category === 'R' && (
+                          <>
+                            <div className="col-12">
+                              <label className="form-label fw-semibold">Rehab Center</label>
+                              <input
+                                className="form-control"
+                                value={row.rehab_center_name}
+                                onChange={(e) =>
+                                  setRow((prev: any) => ({ ...prev, rehab_center_name: e.target.value }))
+                                }
+                              />
+                            </div>
 
-                        <div className="col-12">
-                          <label className="form-label fw-semibold">Address</label>
-                          <input
-                            className="form-control"
-                            value={row?.rehab_center_complete_address || ''}
-                            disabled
-                          />
-                        </div>
+                            <div className="col-12">
+                              <label className="form-label fw-semibold">Address</label>
+                              <input
+                                className="form-control"
+                                value={row.rehab_center_complete_address}
+                                onChange={(e) =>
+                                  setRow((prev: any) => ({ ...prev, rehab_center_complete_address: e.target.value }))
+                                }
+                              />
+                            </div>
 
-                        <div className="col-md-4">
-                          <label className="form-label fw-semibold">City</label>
-                          <input
-                            className="form-control"
-                            value={row?.rehab_center_city || ''}
-                            disabled
-                          />
-                        </div>
+                            <div className="col-md-4">
+                              <label className="form-label fw-semibold">City</label>
+                              <input
+                                className="form-control"
+                                value={row.rehab_center_city}
+                                onChange={(e) =>
+                                  setRow((prev: any) => ({ ...prev, rehab_center_city: e.target.value }))
+                                }
+                              />
+                            </div>
 
-                        <div className="col-md-4">
-                          <label className="form-label fw-semibold">Hospital Code</label>
-                          <input
-                            className="form-control"
-                            value={row?.hospital_code || ''}
-                            disabled
-                          />
-                        </div>
+                            <div className="col-md-4">
+                              <label className="form-label fw-semibold">Hospital Code</label>
+                              <input
+                                className="form-control"
+                                value={row.hospital_code}
+                                onChange={(e) =>
+                                  setRow((prev: any) => ({ ...prev, hospital_code: e.target.value }))
+                                }
+                              />
+                            </div>
+                          </>
+                        )}
 
+                        {/* Username editable for all */}
                         <div className="col-md-4">
                           <label className="form-label fw-semibold">Username</label>
                           <input
@@ -169,7 +194,7 @@ const ProfilePage = () => {
                             className="btn btn-primary"
                             disabled={savingProfile}
                           >
-                            {savingProfile ? 'Saving…' : 'Save Changes'}
+                            {savingProfile ? 'Saving…' : 'Save Changes'}
                           </button>
                         </div>
 
@@ -180,16 +205,16 @@ const ProfilePage = () => {
               </div>
             </div>
 
-            {/* ── Change Password ─────────────────────────────── */}
+            {/* Change Password */}
             <div className="col-lg-4">
               <div className="card shadow-sm">
                 <div className="card-header">
-                  <h5 className="m-0 fw-bold text-warning">Change&nbsp;Password</h5>
+                  <h5 className="m-0 fw-bold text-warning">Change Password</h5>
                 </div>
                 <div className="card-body">
                   <form onSubmit={handlePasswordSubmit}>
                     <div className="mb-3">
-                      <label className="form-label fw-semibold">Old&nbsp;Password</label>
+                      <label className="form-label fw-semibold">Old Password</label>
                       <input
                         type="password"
                         className="form-control"
@@ -200,7 +225,7 @@ const ProfilePage = () => {
                     </div>
 
                     <div className="mb-3">
-                      <label className="form-label fw-semibold">New&nbsp;Password</label>
+                      <label className="form-label fw-semibold">New Password</label>
                       <input
                         type="password"
                         className="form-control"
@@ -211,7 +236,7 @@ const ProfilePage = () => {
                     </div>
 
                     <div className="mb-3">
-                      <label className="form-label fw-semibold">Confirm&nbsp;Password</label>
+                      <label className="form-label fw-semibold">Confirm Password</label>
                       <input
                         type="password"
                         className="form-control"
@@ -227,13 +252,10 @@ const ProfilePage = () => {
                         className="btn btn-success"
                         disabled={savingPassword}
                       >
-                        {savingPassword ? 'Updating…' : 'Change Password'}
+                        {savingPassword ? 'Updating…' : 'Change Password'}
                       </button>
                     </div>
                   </form>
-                  <small className="text-muted d-block mt-2">
-                    Please keep your password confidential.
-                  </small>
                 </div>
               </div>
             </div>

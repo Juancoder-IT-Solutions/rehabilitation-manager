@@ -124,6 +124,39 @@ class Users {
         }
     }
 
+    async resetPassword(password : any, username: string, otp_code: any) {
+        try {
+            const response = await query.post("reset_password_otp", {
+                input: {
+                    username: username,
+                    otp_code: otp_code,
+                    password: password
+                }
+            });
+            console.log("fetching", response)
+            return response.data
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return error
+        }
+    }
+
+    async sendOtp(username : string, email: string) {
+        try {
+            const response = await query.post("request_password_reset", {
+                input: {
+                    username: username,
+                    email: email
+                }
+            });
+            console.log("fetching", response)
+            return response.data
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return error
+        }
+    }
+
 }
 
 let users = new Users
