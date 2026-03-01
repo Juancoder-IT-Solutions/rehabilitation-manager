@@ -38,10 +38,17 @@ class Users {
         return data.data;
     }
 
+    async add(form_data: any) {
+        const data = await query.post("add_rehab_user", {
+            input: form_data
+        })
+
+        return data.data
+    }
 
 
     async update(form_data: any) {
-        const data = await query.post("update_user", {
+        const data = await query.post("update_rehab_user", {
             input: form_data
         })
 
@@ -79,7 +86,7 @@ class Users {
                     user_id: user_id,
                     oldPassword: oldPassword,
                     newPassword: newPassword,
-                    rehab_center_id:rehab_center_id
+                    rehab_center_id: rehab_center_id
                 }
             });
 
