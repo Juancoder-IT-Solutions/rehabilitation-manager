@@ -45,7 +45,7 @@ const Login = () => {
       const res = await signIn('credentials', {
         redirect: false,
         id: user.user_id,
-        role: user.user_category,
+        roles: user.user_category,
         rehab_center_id: user.rehab_center_id,
         username: form_data.username,
         password: form_data.password,

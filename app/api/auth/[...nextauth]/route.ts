@@ -45,19 +45,18 @@ const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id
+                token.roles = user.roles
                 token.rehab_center_id = user.rehab_center_id
             }
             return token
         },
         async session({ session, token }) {
-            // Add id from token to session.user
-            if (token.id) {
-                let session_user: any = session.user
-                session_user.id = token.id;
-                session_user.rehab_center_id = token.rehab_center_id;
-            }
-            return session;
-        },
+            const session_user: any = session.user
+            session_user.id = token.id
+            session_user.roles = token.roles
+            session_user.rehab_center_id = token.rehab_center_id
+            return session
+        }
     }
 }
 

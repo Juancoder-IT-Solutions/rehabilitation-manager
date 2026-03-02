@@ -12,7 +12,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from 'next/navigation';
 
 const UsersPage = () => {
-    const { data: session, status } = useSession();
+    const { data: session, status } = useSession()
     const rehab_center_id = session?.user?.rehab_center_id;
 
     const [listUsers, setListUsers] = useState<any[]>([]);
@@ -28,7 +28,7 @@ const UsersPage = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const response = await usersController.fetch(rehab_center_id);
+            const response = await usersController.fetch('', rehab_center_id);
             setListUsers(response.data);
         } catch (error) {
             console.error('Failed to fetch users:', error);
@@ -104,9 +104,21 @@ const UsersPage = () => {
             )
         },
         { name: "#", selector: (row: any) => row.count, sortable: true },
+        { name: "Full Name", selector: (row: any) => `${row.user_fname} ${row.user_mname} ${row.user_lname}`, sortable: true },
         { name: "Username", selector: (row: any) => row.username, sortable: true },
-        { name: "Full Name", selector: (row: any) => `${row.user_fname} ${row.user_lname}`, sortable: true },
-        { name: "Category", selector: (row: any) => row.user_category, sortable: true },
+        {
+            name: "Category",
+            selector: (row: any) => row.user_category,
+            cell: (row: any) => (
+                <span
+                    className={`badge ${row.user_category === "R" ? "bg-success" : "bg-secondary"
+                        }`}
+                >
+                    {row.user_category === "R" ? "Admin" : "Staff"}
+                </span>
+            ),
+            sortable: true,
+        },
         { name: "Date Added", selector: (row: any) => row.date_added, sortable: true },
     ];
 
