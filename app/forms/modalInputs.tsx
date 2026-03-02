@@ -94,6 +94,7 @@ const ModalInputs: React.FC<ComponentProps> = ({ showModal, setShowModal, form_d
                                     <option value="text">Text</option>
                                     <option value="textarea">Textarea</option>
                                     <option value="select">Select</option>
+                                    <option value="date">Date</option>
                                 </select>
                             </div>
 

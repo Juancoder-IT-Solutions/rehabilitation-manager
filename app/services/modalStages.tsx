@@ -334,7 +334,7 @@ const ModalStages: React.FC<ComponentProps> = ({
                                                     </td>
 
                                                     <td className="align-middle" style={{ width: 220 }}>
-                                                        <div className="btn-group btn-group-sm w-100">
+                                                        <div className="btn-group btn-group-smn">
                                                             <button
                                                                 type="button"
                                                                 className="btn btn-outline-primary"

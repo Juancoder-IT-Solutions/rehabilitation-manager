@@ -210,19 +210,20 @@ const ModalAdmissionRecord: React.FC<Props> = ({
                     )}
 
                     <span
-                      className={`badge rounded-pill ${admission_data.status === 'A' ? 'bg-success text-white' : // Approved
-                        admission_data.status === 'O' ? 'bg-primary text-white' : // Ongoing
-                          admission_data.status === 'F' ? 'bg-secondary text-white' : // Finished
-                            'bg-warning text-dark' // Pending (P or '')
+                      className={`badge rounded-pill ${admission_data.status === 'A' ? 'bg-success text-white' :
+                          admission_data.status === 'O' ? 'bg-primary text-white' :
+                            admission_data.status === 'F' ? 'bg-secondary text-white' :
+                              admission_data.status === 'D' ? 'bg-danger text-white' :
+                                'bg-warning text-dark'
                         }`}
                     >
-                      {admission_data.status === 'A'
-                        ? 'Approved'
-                        : admission_data.status === 'O'
-                          ? 'Ongoing'
-                          : admission_data.status === 'F'
-                            ? 'Finished'
-                            : 'Pending'}
+                      {
+                        admission_data.status === 'A' ? 'Accepted' :
+                          admission_data.status === 'O' ? 'Ongoing' :
+                            admission_data.status === 'F' ? 'Finished' :
+                              admission_data.status === 'D' ? 'Denied' :
+                                'Pending'
+                      }
                     </span>
                   </div>
 
@@ -315,7 +316,7 @@ const ModalAdmissionRecord: React.FC<Props> = ({
                           <button
                             className="btn btn-sm btn-primary"
                             onClick={() => setShowAddServiceModal(true)}
-                            disabled={admission_data.status == "P" || admission_data.status == "" || admission_data.status == "F"}
+                            disabled={admission_data.status !== "O"}
                           >
                             <BiPlusMedical />&nbsp; Add Service
                           </button>
@@ -418,7 +419,7 @@ const ModalAdmissionRecord: React.FC<Props> = ({
 
 
                           {
-                            admission_data.status != "F" && (
+                            admission_data.status != "F" || admission_data.status != "D" && (
                               <button className="btn btn-success btn-sm" onClick={finishAdmission}>
                                 <FaCheck />&nbsp; Finish Admission
                               </button>

@@ -167,6 +167,19 @@ class AdmissionController {
         }
     }
 
+    async reject(payload: { rehab_center_id: any; admission_ids: number[]; }) {
+        try {
+            const res = await query.post("reject_admission", {
+                input: payload
+            });
+
+            return res?.data ?? res;
+        } catch (error) {
+            console.error("Error rejecting admissions:", error);
+            throw error;
+        }
+    }
+
     async deleteService(admission_service_id: number, rehab_center_id: any) {
         try {
             const response = await query.post("delete_admission_service", {
