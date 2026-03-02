@@ -12,8 +12,9 @@ import { useSession } from "next-auth/react";
 import { redirect } from 'next/navigation';
 
 const UsersPage = () => {
-    const { data: session, status } = useSession()
-    const rehab_center_id = session?.user?.rehab_center_id;
+  const { data: session, status } = useSession()
+  // let session_user: any = session?.user
+  const rehab_center_id = session?.user?.rehab_center_id;
 
     const [listUsers, setListUsers] = useState<any[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>([]);

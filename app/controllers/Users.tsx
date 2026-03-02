@@ -20,10 +20,11 @@ class Users {
         }
     }
 
-    async delete_all(ids: any) {
+    async delete_all(ids: any, rehab_center_id: any) {
         const data = await query.post("delete_users", {
             input: {
-                ids: ids
+                ids: ids,
+                rehab_center_id:rehab_center_id
             }
         })
 

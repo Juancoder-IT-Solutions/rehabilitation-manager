@@ -36,7 +36,7 @@ const Navbar = () => {
                                 <span className="avatar avatar-sm">{<FaUser />}</span>
                                 <div className="d-none d-xl-block ps-2">
                                     <div>{session?.user.name}</div>
-                                    <div className="mt-1 small text-muted">{session?.user.role}</div>
+                                    <div className="mt-1 small text-muted">{session?.user.roles == "S" ? "STAFF" : "ADMIN"}</div>
                                 </div>
                             </Link>
                             <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
