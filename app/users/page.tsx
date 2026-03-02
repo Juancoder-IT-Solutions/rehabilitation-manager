@@ -12,9 +12,8 @@ import { useSession } from "next-auth/react";
 import { redirect } from 'next/navigation';
 
 const UsersPage = () => {
-  const { data: session, status } = useSession()
-  // let session_user: any = session?.user
-  const rehab_center_id = session?.user?.rehab_center_id;
+    const { data: session, status } = useSession()
+    const rehab_center_id = session?.user?.rehab_center_id;
 
     const [listUsers, setListUsers] = useState<any[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>([]);
@@ -110,14 +109,21 @@ const UsersPage = () => {
         {
             name: "Category",
             selector: (row: any) => row.user_category,
-            cell: (row: any) => (
-                <span
-                    className={`badge ${row.user_category === "R" ? "bg-success" : "bg-secondary"
-                        }`}
-                >
-                    {row.user_category === "R" ? "Admin" : "Staff"}
-                </span>
-            ),
+            cell: (row: any) => {
+                const map: any = {
+                    R: { label: "Admin", class: "bg-success" },
+                    S: { label: "Staff", class: "bg-secondary" },
+                    U: { label: "Patient", class: "bg-primary" },
+                };
+
+                const config = map[row.user_category] || { label: "Unknown", class: "bg-dark" };
+
+                return (
+                    <span className={`badge ${config.class}`}>
+                        {config.label}
+                    </span>
+                );
+            },
             sortable: true,
         },
         { name: "Date Added", selector: (row: any) => row.date_added, sortable: true },

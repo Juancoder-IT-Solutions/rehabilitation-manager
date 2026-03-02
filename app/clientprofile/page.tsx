@@ -30,7 +30,7 @@ const ClientsPage = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await users.fetch("user_category !='R'", rehab_center_id);
+      const response = await users.fetch("user_category ='U'", rehab_center_id);
       setListClients(response.data);
     } catch (error) {
       console.error('Failed to fetch clients:', error);

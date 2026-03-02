@@ -83,7 +83,7 @@ const ModalStages: React.FC<ComponentProps> = ({
         const formdata = {
             stage_id: editingStageId,
             stage_name: editingStageName,
-            service_id:serviceID,
+            service_id: serviceID,
             rehab_center_id
         };
 
@@ -268,63 +268,93 @@ const ModalStages: React.FC<ComponentProps> = ({
                                 </thead>
                                 <tbody>
                                     {listStages.length > 0 ? (
-                                        listStages.map((stage: any, index: any) => (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>
-                                                    {editingStageId === stage.stage_id ? (
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={editingStageName}
-                                                            onChange={(e) => setEditingStageName(e.target.value)}
-                                                        />
-                                                    ) : (
-                                                        stage.stage_name
-                                                    )}
-                                                </td>
-                                                <td style={{ width: '200px' }}>
-                                                    {editingStageId === stage.stage_id ? (
-                                                        <>
-                                                            <button className="btn btn-primary me-1" onClick={saveEditingStage}>
-                                                                <FaCheck />
-                                                            </button>
-                                                            <button className="btn btn-secondary" onClick={cancelEditingStage}>
-                                                                <FaTimes />
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <div className="btn-group">
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-primary"
-                                                                onClick={() => handleOpenTaskModal(stage)}
-                                                            >
-                                                                <FaPlusCircle />&nbsp; Task
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-info"
-                                                                onClick={() => startEditingStage(stage)}
-                                                            >
-                                                                <FaPencil />&nbsp; Edit
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-danger"
-                                                                onClick={() => handleDelete(stage.stage_id)}
-                                                            >
-                                                                <FaTrash />&nbsp; Delete
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </td>
+                                        listStages.map((stage: any, index: number) => {
+                                            const isEditing = editingStageId === stage.stage_id;
 
-                                            </tr>
-                                        ))
+                                            return (
+                                                <tr key={stage.stage_id}>
+                                                    <td className="text-center align-middle">{index + 1}</td>
+
+                                                    <td className="align-middle">
+                                                        <div className="d-flex align-items-center gap-2">
+
+                                                            {isEditing ? (
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control form-control-sm"
+                                                                    value={editingStageName}
+                                                                    onChange={(e) => setEditingStageName(e.target.value)}
+                                                                    autoFocus
+                                                                />
+                                                            ) : (
+                                                                <span className="fw-semibold">{stage.stage_name}</span>
+                                                            )}
+
+                                                            {isEditing ? (
+                                                                <div className="btn-group btn-group-sm">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-success"
+                                                                        onClick={saveEditingStage}
+                                                                        title="Save"
+                                                                    >
+                                                                        <FaCheck />
+                                                                    </button>
+
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-outline-secondary"
+                                                                        onClick={cancelEditingStage}
+                                                                        title="Cancel"
+                                                                    >
+                                                                        <FaTimes />
+                                                                    </button>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="btn-group">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-outline-info btn-sm"
+                                                                        onClick={() => startEditingStage(stage)}
+                                                                        title="Edit stage"
+                                                                    >
+                                                                        <FaPencil />
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-outline-danger  btn-sm"
+                                                                        onClick={() => handleDelete(stage.stage_id)}
+                                                                        title="Delete stage"
+                                                                    >
+                                                                        <FaTrash /> <span className="d-none d-md-inline"></span>
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </td>
+
+                                                    <td className="align-middle" style={{ width: 220 }}>
+                                                        <div className="btn-group btn-group-sm w-100">
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-outline-primary"
+                                                                onClick={() => handleOpenTaskModal(stage)}
+                                                                title="Add task"
+                                                            >
+                                                                <FaPlusCircle /> <span className="d-none d-md-inline">&nbsp;Task</span>
+                                                            </button>
+
+
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
                                     ) : (
                                         <tr>
-                                            <td colSpan={3} className="text-center text-muted">No record found</td>
+                                            <td colSpan={3} className="text-center text-muted py-4">
+                                                No record found
+                                            </td>
                                         </tr>
                                     )}
                                 </tbody>
