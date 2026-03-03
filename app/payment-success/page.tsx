@@ -1,13 +1,31 @@
 'use client'
 
-import sampleController from "../controllers/sample_controller"
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import paymentsController from "../controllers/Payments";
 
-const About = () => {
+const PaymentSuccess = () => {
+    const searchParams = useSearchParams();
 
-    const test = async () => {
-    //    const data = await sampleController.sample_api()
-    //    console.log(data)
-    }
+    const payment_intent_id = searchParams.get("payment_intent_id");
+    const intent_id = searchParams.get("intent_id");
+    const rehab_id = searchParams.get("rehab_id");
+
+    const [payment_status, setPaymentStatus] = useState("pending")
+    
+    useEffect(() => {
+        const init = async () => {
+            console.log("checkout intent", payment_intent_id)
+            if (payment_intent_id && rehab_id) {
+                const statusRes: any = await paymentsController.check_status(payment_intent_id, rehab_id)
+                console.log("checkout res", statusRes.status)
+                setPaymentStatus(statusRes.status)
+            }
+        }
+
+        init()
+    }, []);
 
     return (
         <div className="page-wrapper">
@@ -15,9 +33,13 @@ const About = () => {
                 <div className="container-xl">
                     <div className="row g-2 align-items-center">
                         <div className="col">
-                            <h2 className="page-title text-green">
-                                Successfull Payment!
-                            </h2>
+                            {
+                                (payment_status == "succeeded") ?
+                                    <h2 className="page-title text-green">Payment Successful</h2>
+                                : <h2 className="page-title text-gray">Waiting for confirmation</h2>
+                            }
+                            
+                            {/* <h2>Reference: {payment_intent_id}</h2> */}
                         </div>
                     </div>
                 </div>
@@ -35,4 +57,4 @@ const About = () => {
     )
 }
 
-export default About
+export default PaymentSuccess
