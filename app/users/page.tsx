@@ -28,7 +28,7 @@ const UsersPage = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const response = await usersController.fetch('', rehab_center_id);
+            const response = await usersController.fetch("user_category!='U'", rehab_center_id);
             setListUsers(response.data);
         } catch (error) {
             console.error('Failed to fetch users:', error);
