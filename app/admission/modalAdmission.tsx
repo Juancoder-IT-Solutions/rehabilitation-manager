@@ -131,6 +131,9 @@ const ModalAdmissionRecord: React.FC<Props> = ({
       alerts.success_add("Admission marked as finished.");
       getServicesAvail(admission_data.admission_id);
       setShowModal(false);
+
+      
+      window.location.reload();
     } catch (err) {
       console.error(err);
       alert("Failed to finish admission.");
@@ -176,6 +179,46 @@ const ModalAdmissionRecord: React.FC<Props> = ({
     }
   };
 
+  const setOngoingAdmission = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Mark this admission as Ongoing?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#0d6efd",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, mark as Ongoing",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await admissionController.update_status(
+        admission_data.admission_id,
+        rehab_center_id,
+        "O"
+      );
+
+      await Swal.fire({
+        icon: "success",
+        title: "Updated!",
+        text: "Admission marked as Ongoing.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      window.location.reload();
+
+    } catch (err) {
+      console.error(err);
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to update admission status.",
+      });
+    }
+  };
 
   return (
     <>
@@ -211,10 +254,10 @@ const ModalAdmissionRecord: React.FC<Props> = ({
 
                     <span
                       className={`badge rounded-pill ${admission_data.status === 'A' ? 'bg-success text-white' :
-                          admission_data.status === 'O' ? 'bg-primary text-white' :
-                            admission_data.status === 'F' ? 'bg-secondary text-white' :
-                              admission_data.status === 'D' ? 'bg-danger text-white' :
-                                'bg-warning text-dark'
+                        admission_data.status === 'O' ? 'bg-primary text-white' :
+                          admission_data.status === 'F' ? 'bg-secondary text-white' :
+                            admission_data.status === 'D' ? 'bg-danger text-white' :
+                              'bg-warning text-dark'
                         }`}
                     >
                       {
@@ -403,29 +446,43 @@ const ModalAdmissionRecord: React.FC<Props> = ({
                         <h6 className="mb-3">Certificate</h6>
 
                         <div className="d-flex gap-2 flex-wrap">
-                          <button className="btn btn-outline-primary btn-sm" onClick={() => generateCertificate({
-                            rehabCenter: admission_data.rehab_center_name,
-                            address: admission_data.rehab_center_address,
-                            participant: admission_data.user,
-                            startDate: admission_data.start_date,
-                            endDate: admission_data.end_date,
-                            programType: admission_data.program_type || "",
-                            location: admission_data.location || "",
-                            adminName: admission_data.admin_name || "",
-                            // logoUrl: "/logo.png"
-                          })} disabled={admission_data.status !== "F"}>
+
+                          <button
+                            className="btn btn-outline-primary"
+                            onClick={() =>
+                              generateCertificate({
+                                rehabCenter: admission_data.rehab_center_name,
+                                address: admission_data.rehab_center_address,
+                                participant: admission_data.user,
+                                startDate: admission_data.start_date,
+                                endDate: admission_data.end_date,
+                                programType: admission_data.program_type || "",
+                                location: admission_data.location || "",
+                                adminName: admission_data.admin_name || "",
+                              })
+                            }
+                            disabled={admission_data.status !== "F"}
+                          >
                             <FaFileCircleCheck />&nbsp; Generate / Download
                           </button>
 
+                          {admission_data.status == "A" && (
+                            <button
+                              className="btn btn-warning"
+                              onClick={setOngoingAdmission}
+                            >
+                              <BiTask />&nbsp; Mark as Ongoing
+                            </button>
+                          )}
 
-                          {
-                            admission_data.status != "F" || admission_data.status != "D" && (
-                              <button className="btn btn-success btn-sm" onClick={finishAdmission}>
-                                <FaCheck />&nbsp; Finish Admission
-                              </button>
-                            )
-                          }
-
+                          {admission_data.status === "O" && (
+                            <button
+                              className="btn btn-success"
+                              onClick={finishAdmission}
+                            >
+                              <FaCheck />&nbsp; Finish Admission
+                            </button>
+                          )}
                         </div>
 
                         <div className="text-muted small mt-2">

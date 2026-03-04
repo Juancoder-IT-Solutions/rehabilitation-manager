@@ -153,8 +153,7 @@ const AdmissionPage = () => {
           showConfirmButton: false
         });
 
-        setSelectedRows([]);
-        fetchEntry();
+        window.location.reload();
       } catch (err) {
         console.error('Reject failed', err);
         Swal.fire({ title: 'Error!', text: 'Failed to reject admissions.', icon: 'error' });

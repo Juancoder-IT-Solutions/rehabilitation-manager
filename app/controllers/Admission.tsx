@@ -154,6 +154,22 @@ class AdmissionController {
         }
     }
 
+    async update_status(admission_id: number, rehab_center_id: number, status: string) {
+        try {
+            const response = await query.post("update_admission_status", {
+                input: {
+                    admission_id,
+                    rehab_center_id,
+                    status
+                }
+            });
+            return response?.data ?? response;
+        } catch (error) {
+            console.error("Error updating admission status:", error);
+            throw error;
+        }
+    }
+
     async approve(payload: { rehab_center_id: any; admission_ids: number[]; start_date: string; }) {
         try {
             const res = await query.post("approve_admission", {
