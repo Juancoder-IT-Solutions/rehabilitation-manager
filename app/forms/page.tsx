@@ -11,6 +11,7 @@ import { LuEqual, LuPencil } from 'react-icons/lu';
 import alerts from '../components/Alerts';
 import ModalInputOptions from './ModalInputOptions';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const FormPage = () => {
   const { data: session, status } = useSession()
@@ -30,6 +31,10 @@ const FormPage = () => {
     setCurrentInputId(input_id);
     setShowOptionsModal(true);
   };
+
+  if (status === "unauthenticated") {
+    redirect('/login');
+  }
 
   const fetchInputs = async () => {
 

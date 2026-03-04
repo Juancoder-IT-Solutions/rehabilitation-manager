@@ -23,7 +23,9 @@ const UsersPage = () => {
     const [submitType, setSubmitType] = useState<'add' | 'update'>('add');
     const [showModal, setShowModal] = useState(false);
 
-    if (status === "unauthenticated") redirect('/login');
+    if (status === "unauthenticated") {
+        redirect('/login');
+    }
 
     const fetchUsers = async () => {
         setLoading(true);

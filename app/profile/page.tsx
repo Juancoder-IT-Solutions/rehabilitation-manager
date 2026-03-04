@@ -13,7 +13,9 @@ const ProfilePage = () => {
   const rehab_center_id = sessionUser?.rehab_center_id
   const user_id = sessionUser?.id
 
-  if (status === 'unauthenticated') redirect('/login')
+  if (status === "unauthenticated") {
+    redirect('/login');
+  }
 
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [savingProfile, setSavingProfile] = useState(false)
@@ -61,7 +63,8 @@ const ProfilePage = () => {
         formData.rehab_center_name = row.rehab_center_name
         formData.rehab_center_complete_address = row.rehab_center_complete_address
         formData.rehab_center_city = row.rehab_center_city
-        formData.hospital_code = row.hospital_code
+        formData.hospital_code = row.hospital_code,
+        formData.rehab_center_desc = row.rehab_center_desc
       }
 
       const response = await users.update_profile(formData)
@@ -142,9 +145,21 @@ const ProfilePage = () => {
                               />
                             </div>
 
+                            
+                            <div className="col-12">
+                              <label className="form-label fw-semibold">Rehab Description</label>
+                              <textarea
+                                className="form-control"
+                                value={row.rehab_center_desc}
+                                onChange={(e) =>
+                                  setRow((prev: any) => ({ ...prev, rehab_center_desc: e.target.value }))
+                                }
+                              />
+                            </div>
+
                             <div className="col-12">
                               <label className="form-label fw-semibold">Address</label>
-                              <input
+                              <textarea
                                 className="form-control"
                                 value={row.rehab_center_complete_address}
                                 onChange={(e) =>

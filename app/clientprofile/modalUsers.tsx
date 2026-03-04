@@ -164,39 +164,39 @@ const ModalUsers: React.FC<ComponentProps> = ({
                       <div className="col-md-4 mb-3">
                         <label className="form-label">First Name</label>
                         <input type="text" className="form-control" name="user_fname"
-                          value={form_data.user_fname || ''} onChange={handleChange} required />
+                          value={form_data.user_fname || ''} onChange={handleChange} readOnly required />
                       </div>
 
                       <div className="col-md-4 mb-3">
                         <label className="form-label">Middle Name</label>
                         <input type="text" className="form-control" name="user_mname"
-                          value={form_data.user_mname || ''} onChange={handleChange} />
+                          value={form_data.user_mname || ''} onChange={handleChange} readOnly />
                       </div>
 
                       <div className="col-md-4 mb-3">
                         <label className="form-label">Last Name</label>
                         <input type="text" className="form-control" name="user_lname"
-                          value={form_data.user_lname || ''} onChange={handleChange} required />
+                          value={form_data.user_lname || ''} onChange={handleChange} required readOnly />
                       </div>
                     </div>
 
                     <div className="mb-3">
                       <label className="form-label">Permanent Address</label>
                       <textarea className="form-control" name="permanent_address"
-                        value={form_data.permanent_address || ''} onChange={handleChange} required />
+                        value={form_data.permanent_address || ''} onChange={handleChange} required readOnly />
                     </div>
 
                     <div className="row">
                       <div className="col-md-6 mb-3">
                         <label className="form-label">Contact Number</label>
                         <input type="text" className="form-control" name="contact_number"
-                          value={form_data.contact_number || ''} onChange={handleChange} />
+                          value={form_data.contact_number || ''} onChange={handleChange} readOnly />
                       </div>
 
                       <div className="col-md-6 mb-3">
                         <label className="form-label">Birthdate</label>
                         <input type="date" className="form-control" name="birthdate"
-                          value={form_data.birthdate || ''} onChange={handleChange} required />
+                          value={form_data.birthdate || ''} onChange={handleChange} required readOnly />
                       </div>
                     </div>
 
@@ -204,13 +204,13 @@ const ModalUsers: React.FC<ComponentProps> = ({
                       <div className="col-md-6 mb-3">
                         <label className="form-label">Birth Place</label>
                         <input type="text" className="form-control" name="birth_place"
-                          value={form_data.birth_place || ''} onChange={handleChange} />
+                          value={form_data.birth_place || ''} onChange={handleChange} readOnly />
                       </div>
 
                       <div className="col-md-6 mb-3">
                         <label className="form-label">Nationality</label>
                         <input type="text" className="form-control" name="nationality"
-                          value={form_data.nationality || ''} onChange={handleChange} />
+                          value={form_data.nationality || ''} onChange={handleChange} readOnly />
                       </div>
                     </div>
 
@@ -254,9 +254,9 @@ const ModalUsers: React.FC<ComponentProps> = ({
               <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
                 Close
               </button>
-              <button type="submit" className="btn btn-primary">
+              {/* <button type="submit" className="btn btn-primary">
                 Save
-              </button>
+              </button> */}
             </div>
           </form>
 

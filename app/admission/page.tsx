@@ -13,6 +13,7 @@ import admissionController from '../controllers/Admission';
 import servicesController from '../controllers/Services';
 import ModalAdmission from './modalAdmission';
 import alerts from '../components/Alerts';
+import { redirect } from 'next/navigation';
 
 const AdmissionPage = () => {
   const { data: session, status } = useSession();
@@ -36,6 +37,10 @@ const AdmissionPage = () => {
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [approvingRows, setApprovingRows] = useState<any[]>([]);
+
+  if (status === "unauthenticated") {
+    redirect('/login');
+  }
 
   const fetchEntry = async () => {
     setLoading(true);

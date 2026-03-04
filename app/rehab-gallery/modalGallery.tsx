@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import alerts from "../components/Alerts";
 import galleryController from "../controllers/RehabGallery";
 
@@ -22,6 +22,7 @@ const ModalGallery: React.FC<ComponentProps> = ({
     rehab_center_id
 }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e: any) => {
         const { name, files } = e.target;
@@ -40,30 +41,38 @@ const ModalGallery: React.FC<ComponentProps> = ({
     const handleSubmit = async (e: any) => {
         e.preventDefault();
 
+        setLoading(true);
+
         let response;
         const formdata = { ...form_data, rehab_center_id };
 
-        if (submit_type === "add") {
-            response = await galleryController.add(formdata);
-        } else if (submit_type === "update") {
-            response = await galleryController.update(formdata);
-        }
-
-        if (response == 1) {
-            submit_type === "add" ? alerts.success_add() : alerts.success_update();
-
-            setFormData([]);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
+        try {
+            if (submit_type === "add") {
+                response = await galleryController.add(formdata);
+            } else if (submit_type === "update") {
+                response = await galleryController.update(formdata);
             }
 
+            if (response == 1) {
+                submit_type === "add" ? alerts.success_add() : alerts.success_update();
 
-            setShowModal(false);
-            fetchEntry();
-        } else if (response === -2) {
-            alert("Service already exists.");
-        } else {
-            alert("Failed query.");
+                setFormData([]);
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
+
+                setShowModal(false);
+                fetchEntry();
+            } else if (response === -2) {
+                alert("Service already exists.");
+            } else {
+                alert("Failed query.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Something went wrong.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -130,8 +139,22 @@ const ModalGallery: React.FC<ComponentProps> = ({
                             >
                                 Close
                             </button>
-                            <button type="submit" className="btn btn-primary px-4">
-                                Save
+                            <button
+                                type="submit"
+                                className="btn btn-primary px-4"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <span
+                                            className="spinner-border spinner-border-sm me-2"
+                                            role="status"
+                                        ></span>
+                                        Saving...
+                                    </>
+                                ) : (
+                                    "Save"
+                                )}
                             </button>
                         </div>
                     </form>
