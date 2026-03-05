@@ -10,6 +10,7 @@ import { MdMedicalInformation } from "react-icons/md";
 import alerts from "../components/Alerts";
 import { generateCertificate } from "../components/generateCertificate";
 import Swal from "sweetalert2";
+import { ethers } from "ethers";
 
 interface InputField {
   input_id: number;
@@ -228,6 +229,9 @@ const ModalAdmissionRecord: React.FC<Props> = ({
     const end_date = new Date("2026-03-04")
     const completionDate = Math.floor(end_date.getTime() / 1000);
     const program = "Example rehab service" // service name
+    const dataString = `${certificateId}|${patientName}|${program}|${completionDate}`;
+    const dataHash = ethers.keccak256(ethers.toUtf8Bytes(dataString));
+
     const res = await fetch("/api/certificate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

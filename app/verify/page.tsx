@@ -28,20 +28,7 @@ const verify = () => {
           completionDate,
           dataHash
         })
-
-        console.log({
-          patientName,
-          program,
-          completionDate,
-          dataHash
-        })
-
-        // certificate = {
-        // patientName,
-        // program,
-        // completionDate,
-        // dataHash,
-        // };
+        
     } catch (error) {
         // certificate = null;
         setCertificate({})
