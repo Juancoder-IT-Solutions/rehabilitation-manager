@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { BiCalendarEvent, BiUserPlus } from "react-icons/bi"
-import { BsCashCoin } from 'react-icons/bs';
+import { BsCashCoin, BsCheck2Circle } from 'react-icons/bs';
 import { ImProfile } from "react-icons/im"
 import { LuBookImage, LuBookOpen, LuBookUser, LuFileText, LuHouse } from "react-icons/lu"
 
@@ -98,6 +98,15 @@ const Menus = () => {
                         <BsCashCoin size={24} />
                       </span>
                       <span className="nav-link-title">Payments</span>
+                    </Link>
+                  </li>
+
+                  <li className={isActive("/verify") ? "nav-item active" : "nav-item"}>
+                    <Link className="nav-link" href="/verify">
+                      <span className="nav-link-icon d-md-none d-lg-inline-block">
+                        <BsCheck2Circle size={24} />
+                      </span>
+                      <span className="nav-link-title">Verify Certificates</span>
                     </Link>
                   </li>
 

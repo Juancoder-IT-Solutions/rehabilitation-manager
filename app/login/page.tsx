@@ -164,6 +164,11 @@ const Login = () => {
               Create One
             </a>
           </div>
+          <div className="text-center text-muted mt-4">
+            <a href="/verify">
+              Click here to verify your certificate
+            </a>
+          </div>
         </div>
       </div>
 
