@@ -619,13 +619,15 @@ const ModalAdmissionRecord: React.FC<Props> = ({
                             onClick={() =>
                               generateCertificate({
                                 rehabCenter: admission_data.rehab_center_name,
-                                address: admission_data.rehab_center_address,
+                                address: admission_data.rehab_center_complete_address,
                                 participant: admission_data.user,
                                 startDate: admission_data.start_date,
                                 endDate: admission_data.end_date,
                                 programType: admission_data.program_type || "",
                                 location: admission_data.location || "",
                                 adminName: admission_data.admin_name || "",
+                                services: services.map((s: any) => s.service_name),
+                                hash: admission_data.tx_hash || "",
                               })
                             }
                             disabled={admission_data.status !== "F"}

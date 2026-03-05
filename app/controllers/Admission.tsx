@@ -3,7 +3,7 @@ import query from "./Sql";
 
 class AdmissionController {
 
-    async fetch(rehab_center_id: any) {
+    async   fetch(rehab_center_id: any) {
         try {
             const response = query.get("show_admissions", {
                 input: {
