@@ -220,6 +220,35 @@ const ModalAdmissionRecord: React.FC<Props> = ({
     }
   };
 
+  const create_smart_contract = async () => {
+    console.log("smart contract")
+    // insert to certificate (table of rehab) -> certificate id
+    const certificateId = "2" // certificate_id.toString()
+    const patientName = "Juan"
+    const end_date = new Date("2026-03-04")
+    const completionDate = Math.floor(end_date.getTime() / 1000);
+    const program = "Example rehab service" // service name
+    const res = await fetch("/api/certificate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        certificateId,
+        patientName,
+        completionDate,
+        program
+      }),
+    });
+
+    const data = await res.json();
+    if (data.success){
+      console.log(`Certificate Issued! TX: ${data.txHash}`);
+      // update hash table certificate
+      // insert to main table (updated entry)
+    }else{
+      console.log(`Error: ${data.message}`);
+    }
+  }
+
   return (
     <>
       <div className={`modal modal-blur fade ${showModal ? "show d-block" : "d-none"}`} tabIndex={-1}>
