@@ -2,6 +2,7 @@
 import { ethers } from "ethers"
 import abi from "../../lib/RehabCertificate.json"
 import { useState } from "react"
+import admissionController from "../controllers/Admission"
 
 const verify = () => {
     const provider = new ethers.JsonRpcProvider(process.env.NEXT_PUBLIC_RPC_URL);
@@ -13,50 +14,86 @@ const verify = () => {
     // } | null = null;
 
     const [certificate_id, setCertificateId] = useState("")
+    const [hash_transaction, setHashTransaction] = useState("")
     const [certificate, setCertificate] = useState<any>({})
+  
+    const verify = async () => {
+      
+      if(hash_transaction == ""){
+        alert("Please provide reference number")
+      }else{
+        const data: any = await admissionController.get_certificate(hash_transaction)
 
-  const verify = async () => {
-    console.log(process.env.NEXT_PUBLIC_RPC_URL)
-    const contract = new ethers.Contract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string, abi.abi, provider);
-
-    try {
-        const [patientName, program, completionDate, dataHash] = await contract.verifyCertificate(certificate_id);
-
-        setCertificate({
-          patientName,
-          program,
-          completionDate,
-          dataHash
-        })
-        
-    } catch (error) {
-        // certificate = null;
-        setCertificate({})
-        console.log(error)
+        if(data.certificate_id){
+          const certificateId = (data.certificate_id).toString()
+          setCertificateId(certificateId)
+          const contract = new ethers.Contract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string, abi.abi, provider);
+          try {
+            const [patientName, program, completionDate, dataHash] = await contract.verifyCertificate(certificateId);
+            
+              setCertificate({patientName, program, completionDate, dataHash })
+              
+            } catch (error) {
+                setCertificate({})
+                setCertificateId("")
+                console.log(error)
+            }
+          }else{
+            setCertificate({})
+            setCertificateId("")
+            // alert("Cannot find certificate")
+          }
+      }
     }
-  }
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <input type="text" onInput={(e: any) => setCertificateId(e.target.value)} value={certificate_id} />
-      <button onClick={verify}>Verify</button>
-      {certificate ? (
-        <div>
-          <h1>Certificate Verified</h1>
-          <p>ID: {certificate_id}</p>
-          <p>Patient: {certificate?.patientName}</p>
-          <p>Program: {certificate?.program}</p>
-          <p>
-            Date:{" "}
-            {new Date(
-              Number(certificate?.completionDate) * 1000
-            ).toLocaleDateString()}
-          </p>
-          <p>Hash: {certificate?.dataHash}</p>
+      <div className="page-wrapper">
+        <div className="page-header d-print-none">
+            <div className="container-xl">
+                <div className="row g-2 align-items-center">
+                    <div className="col">
+                        <h2 className="page-title">
+                          Verify Certificate
+                        </h2>
+                    </div>
+                </div>
+            </div>
         </div>
-      ) : (
-        <h1>Certificate Not Found</h1>
-      )}
+        <div className="page-body">
+            <div className="container-xl">
+              <div className="row">
+                <div className="col-sm-8">
+                  <input type="text" className="form-control" onInput={(e: any) => setHashTransaction(e.target.value)} value={hash_transaction} placeholder="Input hash transaction reference or certificate code printed on your rehabilitation document ..." />
+                </div>
+                <div className="col-sm-4">
+                  <button className="btn btn-primary" onClick={verify}>Verify</button>
+                </div>
+              </div>
+              <br />
+
+                <div className="card">
+                    <div className="card-body">
+                      {certificate && certificate_id !== "" ? (
+                        <div>
+                          <h1 className="text-success">Certificate Verified</h1>
+                          <p>ID: {certificate_id}</p>
+                          <p>Patient: {certificate?.patientName}</p>
+                          <p>Program: {certificate?.program}</p>
+                          <p>
+                            Date:{" "}
+                            {new Date(
+                              Number(certificate?.completionDate) * 1000
+                            ).toLocaleDateString()}
+                          </p>
+                          <p>Hash: {certificate?.dataHash}</p>
+                        </div>
+                      ) : (
+                        <h1 className="text-danger">Certificate Not Found</h1>
+                      )}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
   );
 }

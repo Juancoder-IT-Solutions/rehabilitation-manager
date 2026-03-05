@@ -230,6 +230,21 @@ class AdmissionController {
         }
     }
 
+    async get_certificate(dataHash: any) {
+        try {
+            const res = await query.post("get_certificate", {
+                input: {
+                    dataHash: dataHash
+                }
+            });
+
+            return res?.data ?? res;
+        } catch (error) {
+            console.error("Error in query", error);
+            throw error;
+        }
+    }
+
     async deleteService(admission_service_id: number, rehab_center_id: any) {
         try {
             const response = await query.post("delete_admission_service", {
