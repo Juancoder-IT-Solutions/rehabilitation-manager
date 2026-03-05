@@ -28,7 +28,7 @@ export const generateCertificate = (data: {
     doc.setTextColor(color);
 
     const lines = doc.splitTextToSize(text, pageWidth - 100);
-    lines.forEach((line, i) => {
+    lines.forEach((line: any, i: any) => {
       doc.text(line, pageWidth / 2, y + i * (fontSize + 4), { align: 'center' });
     });
 
