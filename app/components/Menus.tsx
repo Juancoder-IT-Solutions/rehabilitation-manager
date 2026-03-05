@@ -74,7 +74,7 @@ const Menus = () => {
                     </Link>
                   </li>
 
-                  <li className={isActive("/gallery") ? "nav-item active" : "nav-item"}>
+                  <li className={isActive("/rehab-gallery") ? "nav-item active" : "nav-item"}>
                     <Link className="nav-link" href="/rehab-gallery">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
                         <LuBookImage size={24} />
