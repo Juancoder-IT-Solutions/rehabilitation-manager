@@ -125,20 +125,83 @@ const ModalAdmissionRecord: React.FC<Props> = ({
   };
 
   const finishAdmission = async () => {
-    if (!confirm("Are you sure you want to finish this admission?")) return;
+
+    const result = await Swal.fire({
+      title: "Finish Admission?",
+      text: "This action will mark the admission as completed and generate a certificate.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Finish",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#198754",
+      cancelButtonColor: "#6c757d",
+      reverseButtons: true
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
-      await admissionController.finish_admission(admission_data.admission_id, rehab_center_id);
-      alerts.success_add("Admission marked as finished.");
-      getServicesAvail(admission_data.admission_id);
-      setShowModal(false);
 
-      
-      window.location.reload();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to finish admission.");
+      Swal.fire({
+        title: "Finalizing Admission",
+        text: "Please wait while the system completes the process.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      await admissionController.finish_admission(
+        admission_data.admission_id,
+        rehab_center_id
+      );
+
+      const certificate_id = await admissionController.add_certificate(
+        admission_data.admission_id,
+        rehab_center_id
+      );
+
+      if (certificate_id > 0) {
+
+        Swal.close();
+
+        await create_smart_contract(
+          certificate_id,
+          admission_data.admission_id,
+          rehab_center_id
+        );
+
+        getServicesAvail(admission_data.admission_id);
+        setShowModal(false);
+
+      } else if (certificate_id == -1) {
+
+        Swal.fire({
+          icon: "warning",
+          title: "Certificate Already Exists",
+          text: "A certificate has already been generated for this admission.",
+          confirmButtonColor: "#0d6efd"
+        });
+
+      } else {
+
+        throw new Error("Failed to create certificate.");
+
+      }
+
+    } catch (error: any) {
+
+      Swal.fire({
+        icon: "error",
+        title: "Process Failed",
+        text: error.message || "An unexpected error occurred.",
+        confirmButtonColor: "#dc3545"
+      });
+
     }
+
   };
 
   const handleDeleteService = async (admission_service_id: number) => {
@@ -221,37 +284,108 @@ const ModalAdmissionRecord: React.FC<Props> = ({
     }
   };
 
-  const create_smart_contract = async () => {
-    console.log("smart contract")
-    // insert to certificate (table of rehab) -> certificate id
-    const certificateId = "2" // certificate_id.toString()
-    const patientName = "Juan"
-    const end_date = new Date("2026-03-04")
-    const completionDate = Math.floor(end_date.getTime() / 1000);
-    const program = "Example rehab service" // service name
-    const dataString = `${certificateId}|${patientName}|${program}|${completionDate}`;
-    const dataHash = ethers.keccak256(ethers.toUtf8Bytes(dataString));
+  const create_smart_contract = async (
+    certificate_id: string,
+    admission_id: any,
+    rehab_center_id: number
+  ) => {
 
-    const res = await fetch("/api/certificate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        certificateId,
-        patientName,
-        completionDate,
-        program
-      }),
+    Swal.fire({
+      title: "Processing Certificate",
+      html: `
+      <div style="font-size:15px; line-height:1.6;">
+        <p class="mb-2">
+          Your certificate is being securely registered on the blockchain.
+        </p>
+        <p class="text-muted mb-0">
+          This may take a few seconds. Please wait...
+        </p>
+      </div>
+    `,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
     });
 
-    const data = await res.json();
-    if (data.success){
-      console.log(`Certificate Issued! TX: ${data.txHash}`);
-      // update hash table certificate
-      // insert to main table (updated entry)
-    }else{
-      console.log(`Error: ${data.message}`);
+    try {
+      const certificateId = certificate_id.toString();
+      const patientName = admission_data.user;
+      const completionDate = Math.floor(Date.now() / 1000);
+
+      const program = services
+        .map((s: any) => s.service_name)
+        .join(", ");
+
+      const dataString = `${certificateId}|${patientName}|${program}|${completionDate}`;
+      const dataHash = ethers.keccak256(
+        ethers.toUtf8Bytes(dataString)
+      );
+
+      const res = await fetch("/api/certificate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          certificateId,
+          patientName,
+          completionDate,
+          program
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        throw new Error(data.message || "Unable to deploy smart contract.");
+      }
+
+      await admissionController.update_certificate_hash(
+        rehab_center_id,
+        certificate_id,
+        dataHash,
+        data.txHash
+      );
+
+      await Swal.fire({
+        icon: "success",
+        title: "Certificate Successfully Registered",
+        html: `
+        <div style="font-size:15px; line-height:1.6; text-align:center;">
+          <p class="mb-2">
+            The certificate has been securely recorded on the blockchain.
+          </p>
+        </div>
+      `,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#0d6efd",
+        width: 520,
+      });
+
+      window.location.reload();
+
+    } catch (error: any) {
+
+      Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        html: `
+        <div style="font-size:14px; line-height:1.6;">
+          <p class="mb-2">
+            The system was unable to complete the blockchain registration.
+          </p>
+          <div class="bg-light border rounded p-2 text-danger small text-break">
+            ${error.message || "Unexpected error occurred."}
+          </div>
+        </div>
+      `,
+        confirmButtonColor: "#dc3545",
+        width: 500,
+      });
+
     }
-  }
+  };
 
   return (
     <>
@@ -389,13 +523,13 @@ const ModalAdmissionRecord: React.FC<Props> = ({
                         <div className="d-flex justify-content-between mb-3">
                           <h6 className="mb-0">Assigned Services</h6>
 
-                          <button
+                          {/* <button
                             className="btn btn-sm btn-primary"
                             onClick={() => setShowAddServiceModal(true)}
                             disabled={admission_data.status !== "O"}
                           >
                             <BiPlusMedical />&nbsp; Add Service
-                          </button>
+                          </button> */}
                         </div>
 
                         {services.length === 0 && (

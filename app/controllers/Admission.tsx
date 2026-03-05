@@ -154,6 +154,21 @@ class AdmissionController {
         }
     }
 
+    async add_certificate(admission_id: any, rehab_center_id: any) {
+        try {
+            const res = await query.post("add_admission_certificate", {
+                input: {
+                    admission_id,
+                    rehab_center_id
+                }
+            });
+            return res.data;
+        } catch (error) {
+            console.error("Error adding certificate:", error);
+            throw error;
+        }
+    }
+
     async update_status(admission_id: number, rehab_center_id: number, status: string) {
         try {
             const response = await query.post("update_admission_status", {
@@ -192,6 +207,25 @@ class AdmissionController {
             return res?.data ?? res;
         } catch (error) {
             console.error("Error rejecting admissions:", error);
+            throw error;
+        }
+    }
+
+    
+    async update_certificate_hash(rehab_center_id: number, certificate_id: any, dataHash: any, blockchain_hash: any) {
+        try {
+            const res = await query.post("update_certificate_hash", {
+                input: {
+                    rehab_center_id: rehab_center_id,
+                    certificate_id: certificate_id,
+                    dataHash: dataHash,
+                    blockchain_hash: blockchain_hash
+                }
+            });
+
+            return res?.data ?? res;
+        } catch (error) {
+            console.error("Error updating certificate hash:", error);
             throw error;
         }
     }
