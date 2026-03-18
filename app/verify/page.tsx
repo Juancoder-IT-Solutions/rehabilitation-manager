@@ -44,8 +44,7 @@ const verify = () => {
           provider
         )
 
-        const [patientName, program, completionDate, dataHash] =
-          await contract.verifyCertificate(certificateId)
+        const [patientName, program, completionDate, dataHash] = await contract.verifyCertificate(certificateId)
 
         setCertificate({ patientName, program, completionDate, dataHash })
       } else {

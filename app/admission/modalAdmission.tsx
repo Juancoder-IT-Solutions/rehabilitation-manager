@@ -627,7 +627,7 @@ const ModalAdmissionRecord: React.FC<Props> = ({
                                 location: admission_data.location || "",
                                 adminName: admission_data.admin_name || "",
                                 services: services.map((s: any) => s.service_name),
-                                hash: admission_data.tx_hash || "",
+                                hash: admission_data.blockchain_hash || "",
                               })
                             }
                             disabled={admission_data.status !== "F"}

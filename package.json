@@ -20,6 +20,7 @@
     "next": "^16.1.6",
     "next-auth": "^4.24.11",
     "pdfjs-dist": "^2.16.105",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-apexcharts": "^1.7.0",
     "react-bootstrap": "^2.10.9",
