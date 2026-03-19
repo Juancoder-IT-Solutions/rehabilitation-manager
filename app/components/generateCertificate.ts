@@ -1,6 +1,8 @@
 'use client'
 
-import { jsPDF } from "jspdf";
+// import { jsPDF } from "jspdf";
+
+import jsPDF from "jspdf/dist/jspdf.umd.min.js";
 import QRCode from "qrcode";
 
 export const generateCertificate = async (data: {
