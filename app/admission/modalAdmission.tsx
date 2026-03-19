@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from "react";
 import { FaCheck, FaPrint, FaTrash, FaUserCircle } from "react-icons/fa";
 import { FaFileCircleCheck } from "react-icons/fa6";
