@@ -631,6 +631,7 @@ const ModalAdmissionRecord: React.FC<Props> = ({
                                 hash: admission_data.blockchain_hash || "",
                               })
                             }
+                            
                             disabled={admission_data.status !== "F"}
                           >
                             <FaFileCircleCheck />&nbsp; Generate / Download
